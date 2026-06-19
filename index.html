@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tani Barokah | Platform Pertanian Syariah</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'tani-dark': '#14532D',   /* Primary Dark Green */
+                        'tani-green': '#22C55E',  /* Vibrant Green */
+                        'tani-light': '#F0FDF4',  /* Light Background */
+                        'tani-gold': '#D4AF37',   /* Gold */
+                        'bg-main': '#FBFAFB',     /* App Background */
+                        'dark-bg': '#121212',
+                        'dark-card': '#1E1E1E'
+                    },
+                    fontFamily: { sans: ['Poppins', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #FBFAFB; }
+        .dark body { background-color: #121212; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        .nav-item-active { color: #14532D !important; font-weight: 600; }
+        .dark .nav-item-active { color: #22C55E !important; }
+        
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .toast-enter { animation: slideInRight 0.3s ease-out forwards; }
+    </style>
+</head>
+<body class="text-gray-800 font-sans transition-colors duration-300 dark:bg-dark-bg dark:text-gray-200 overscroll-none">
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-24 right-4 z-[80] flex flex-col gap-2 pointer-events-none w-[90%] max-w-sm"></div>
+
+    <!-- App Header -->
+    <header id="app-header" class="bg-bg-main dark:bg-dark-bg fixed w-full z-50 top-0 pt-4 pb-2 transition-colors duration-300 shadow-sm border-b border-gray-100 dark:border-gray-800">
+        <div class="max-w-md mx-auto px-5 flex justify-between items-center">
+            <div id="header-user-info" class="transition-opacity cursor-pointer" onclick="navigate('home')">
+                <p class="text-[10px] text-gray-500 dark:text-gray-400">Assalamu'alaikum,</p>
+                <h1 class="text-lg font-bold text-tani-dark dark:text-white leading-tight" id="header-greeting-name">Sahabat Tani</h1>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <button onclick="toggleDarkMode()" class="w-9 h-9 rounded-full bg-white dark:bg-dark-card shadow-sm border border-gray-100 dark:border-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-300">
+                    <i class="fas fa-moon dark:hidden"></i>
+                    <i class="fas fa-sun hidden dark:block text-yellow-400"></i>
+                </button>
+                <button onclick="navigate('cart')" class="relative w-9 h-9 rounded-full bg-white dark:bg-dark-card shadow-sm border border-gray-100 dark:border-gray-800 flex items-center justify-center text-tani-dark dark:text-tani-green">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="header-cart-badge" class="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center hidden border border-white">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main id="app-content" class="pt-20 pb-28 min-h-screen max-w-md mx-auto">
+        <!-- Injected Content Here -->
+    </main>
+
+    <!-- Bottom Navigation -->
+    <div id="bottom-nav" class="fixed bottom-0 left-0 w-full bg-white dark:bg-dark-card border-t border-gray-100 dark:border-gray-800 z-40 pb-safe rounded-t-3xl shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)]">
+        <div class="max-w-md mx-auto flex justify-between items-center h-20 px-6">
+            <button onclick="navigate('home')" id="nav-btn-home" class="flex flex-col items-center justify-center w-12 text-gray-400 transition-colors">
+                <i class="fas fa-home text-xl mb-1.5"></i><span class="text-[9px]">Beranda</span>
+            </button>
+            <button onclick="navigate('marketplace')" id="nav-btn-marketplace" class="flex flex-col items-center justify-center w-12 text-gray-400 transition-colors">
+                <i class="fas fa-store text-xl mb-1.5"></i><span class="text-[9px]">Toko</span>
+            </button>
+            <button onclick="toggleChat()" id="nav-btn-chat" class="flex flex-col items-center justify-center w-12 text-gray-400 transition-colors">
+                <i class="fas fa-robot text-xl mb-1.5"></i><span class="text-[9px]">Kawan Tani</span>
+            </button>
+            <button onclick="navigateDashboard()" id="nav-btn-dashboard" class="flex flex-col items-center justify-center w-12 text-gray-400 transition-colors">
+                <i class="fas fa-receipt text-xl mb-1.5"></i><span class="text-[9px]">Transaksi</span>
+            </button>
+            <button onclick="navigateAkun()" id="nav-btn-akun" class="flex flex-col items-center justify-center w-12 text-gray-400 transition-colors">
+                <i id="nav-icon-akun" class="far fa-user text-xl mb-1.5"></i><span id="nav-text-akun" class="text-[9px]">Akun</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- AI Chatbot Floating Window -->
+    <div id="ai-widget" class="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm hidden flex items-end justify-center">
+        <div class="bg-white dark:bg-dark-card w-full max-w-md rounded-t-3xl h-[85vh] flex flex-col shadow-2xl relative">
+            <div class="absolute w-12 h-1.5 bg-gray-300 rounded-full top-3 left-1/2 transform -translate-x-1/2"></div>
+            
+            <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center mt-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-tani-light rounded-full flex items-center justify-center"><i class="fas fa-robot text-tani-dark text-xl"></i></div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 dark:text-white text-sm">Kawan Tani</h3>
+                        <p class="text-[10px] text-tani-green"><i class="fas fa-circle text-[8px] mr-1"></i>Online</p>
+                    </div>
+                </div>
+                <button onclick="toggleChat()" class="text-gray-400 hover:text-red-500 w-8 h-8 flex items-center justify-center"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            
+            <div id="chat-messages" class="flex-1 p-5 overflow-y-auto bg-gray-50 dark:bg-gray-900 space-y-4">
+                <div class="flex gap-2">
+                    <div class="w-8 h-8 rounded-full bg-tani-dark flex items-center justify-center flex-shrink-0 mt-1"><i class="fas fa-robot text-white text-xs"></i></div>
+                    <div class="bg-white dark:bg-dark-card p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 dark:border-gray-800 text-xs text-gray-700 dark:text-gray-300">
+                        Assalamu'alaikum! 🙏 Saya Kawan Tani. Anda bisa bertanya apa saja kepada saya, mulai dari pertanian, teknologi, hingga pengetahuan umum!
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-white dark:bg-dark-card border-t border-gray-100 dark:border-gray-800 pb-safe">
+                <div class="flex gap-2 items-center bg-gray-50 dark:bg-gray-800 rounded-full p-1.5 border border-gray-200 dark:border-gray-700">
+                    <input type="text" id="chat-input" placeholder="Tanya sesuatu ke Kawan Tani..." class="flex-1 bg-transparent px-4 py-2 text-sm focus:outline-none dark:text-white" onkeypress="if(event.key === 'Enter') sendMessage()">
+                    <button onclick="sendMessage()" class="bg-tani-dark text-white w-10 h-10 rounded-full flex items-center justify-center shadow-sm flex-shrink-0 hover:bg-green-800">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Detail Modal -->
+    <div id="product-modal" class="hidden fixed inset-0 z-[70] bg-black/60 flex items-end justify-center backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-dark-card w-full max-w-md rounded-t-3xl shadow-2xl flex flex-col relative max-h-[90vh]">
+            <div class="absolute w-12 h-1.5 bg-gray-300 rounded-full top-3 left-1/2 transform -translate-x-1/2 z-20"></div>
+            <button onclick="closeProductModal()" class="absolute top-4 right-4 bg-white/80 backdrop-blur dark:bg-gray-800 text-gray-800 dark:text-gray-200 w-8 h-8 rounded-full flex items-center justify-center shadow-md z-20">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <div class="overflow-y-auto w-full h-full pb-safe hide-scrollbar rounded-t-3xl">
+                <div class="w-full h-72 bg-gray-100 relative">
+                    <img id="modal-img" src="" alt="Product" class="w-full h-full object-cover">
+                </div>
+                <div class="p-6 bg-white dark:bg-dark-card">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <span id="modal-category" class="text-tani-green text-[10px] font-bold uppercase tracking-wider">Kategori</span>
+                            <h2 id="modal-title" class="text-2xl font-bold text-gray-800 dark:text-white mt-1 leading-tight">Nama Produk</h2>
+                            <p id="modal-weight" class="text-sm text-gray-500 mt-1">1 kg</p>
+                        </div>
+                        <div class="flex items-center bg-yellow-50 dark:bg-yellow-900/20 px-2 py-1 rounded-lg">
+                            <i class="fas fa-star text-yellow-400 text-xs mr-1"></i>
+                            <span id="modal-rating" class="text-xs font-bold text-gray-700 dark:text-gray-300">4.8</span>
+                        </div>
+                    </div>
+                    
+                    <p id="modal-price" class="text-2xl font-bold text-tani-dark dark:text-tani-green mb-6">Rp 0</p>
+                    
+                    <div class="flex items-center gap-3 mb-6 bg-gray-50 dark:bg-gray-800 p-3 rounded-2xl border border-gray-100 dark:border-gray-700">
+                        <img id="modal-farmer-img" src="" alt="Petani" class="w-12 h-12 rounded-full object-cover">
+                        <div>
+                            <p class="text-[10px] text-gray-500 dark:text-gray-400">Petani Terverifikasi <i class="fas fa-check-circle text-blue-500"></i></p>
+                            <p id="modal-farmer" class="font-semibold text-gray-800 dark:text-gray-200 text-sm">Nama Petani</p>
+                        </div>
+                    </div>
+
+                    <h3 class="font-semibold text-gray-800 dark:text-white mb-2 text-sm">Deskripsi Produk</h3>
+                    <p id="modal-desc" class="text-gray-500 dark:text-gray-400 text-xs leading-relaxed mb-8">Deskripsi produk...</p>
+                    
+                    <div class="flex gap-3">
+                        <div class="flex items-center justify-between border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden h-14 bg-gray-50 dark:bg-gray-800 w-1/3">
+                            <button onclick="updateModalQty(-1)" class="w-10 h-full text-gray-600 dark:text-gray-300 text-lg"><i class="fas fa-minus"></i></button>
+                            <input type="number" id="modal-qty" value="1" min="1" class="w-full text-center bg-transparent text-gray-800 dark:text-white font-bold h-full outline-none pointer-events-none">
+                            <button onclick="updateModalQty(1)" class="w-10 h-full text-gray-600 dark:text-gray-300 text-lg"><i class="fas fa-plus"></i></button>
+                        </div>
+                        <button id="modal-add-btn" class="flex-1 bg-tani-dark active:bg-green-800 text-white font-bold rounded-2xl h-14 shadow-lg shadow-green-900/20 flex items-center justify-center gap-2">
+                            Tambah Keranjang
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Article Detail Modal -->
+    <div id="article-modal" class="hidden fixed inset-0 z-[75] bg-white dark:bg-dark-bg flex flex-col transition-transform transform translate-y-full duration-300">
+        <div class="relative h-64 flex-shrink-0">
+            <img id="article-img" src="" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-b from-black/60 to-transparent"></div>
+            <button onclick="closeArticleModal()" class="absolute top-6 left-5 text-white w-10 h-10 bg-black/30 backdrop-blur rounded-full flex items-center justify-center"><i class="fas fa-arrow-left"></i></button>
+            <span id="article-tag" class="absolute bottom-4 left-5 bg-tani-gold text-tani-dark text-[10px] font-bold px-3 py-1 rounded-full">Kategori</span>
+        </div>
+        <div class="flex-1 overflow-y-auto p-6 pb-24">
+            <h2 id="article-title" class="text-2xl font-bold text-gray-800 dark:text-white leading-tight mb-4">Judul Artikel</h2>
+            <div id="article-content" class="text-sm text-gray-600 dark:text-gray-300 space-y-4 leading-relaxed">
+                <!-- Content here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Calculator Modal -->
+    <div id="calculator-modal" class="hidden fixed inset-0 z-[80] bg-black/60 flex items-center justify-center backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-dark-card w-[90%] max-w-sm rounded-3xl shadow-2xl overflow-hidden">
+            <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50 dark:bg-gray-900">
+                <h3 class="font-bold text-gray-800 dark:text-white">Kalkulator Tani</h3>
+                <button onclick="closeCalculator()" class="text-gray-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <div class="p-5">
+                <input type="text" id="calc-display" class="w-full bg-gray-100 dark:bg-gray-800 text-right text-3xl font-bold p-4 rounded-2xl mb-4 focus:outline-none dark:text-white" disabled value="0">
+                <div class="grid grid-cols-4 gap-3">
+                    <button onclick="calcClear()" class="col-span-2 bg-red-100 text-red-600 font-bold py-3 rounded-xl hover:bg-red-200">C</button>
+                    <button onclick="calcPress('Backspace')" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white font-bold py-3 rounded-xl"><i class="fas fa-backspace"></i></button>
+                    <button onclick="calcPress('/')" class="bg-tani-light dark:bg-tani-dark text-tani-dark dark:text-white font-bold py-3 rounded-xl">÷</button>
+                    
+                    <button onclick="calcPress('7')" class="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white font-bold py-3 rounded-xl">7</button>
+                    <button onclick="calcPress('8')" class="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white font-bold py-3 rounded-xl">8</button>
+                    <button onclick="calcPress('9')" class="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white font-bold py-3 rounded-xl">9</button>
+                    <button onclick="calcPress('*')" class="bg-tani-light dark:bg-tani-dark text-tani-dark dark:text-white font-bold py-3 rounded-xl">×</button>
+                    
+                    <button onclick="calcPress('4')" class="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white font-bold py-3 rounded-xl">4</button>
+                    <button onclick="calcPress('5')" class="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white font-bold py-3 rounded-xl">5</button>
+                    <button onclick="calcPress('6')" class="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white font-bold py-3 rounded-xl">6</button>
+                    <button onclick="calcPress('-')" class="bg-tani-light dark:bg-tani-dark text-tani-dark dark:text-white font-bold py-3 rounded-xl">-</button>
+                    
+                    <button onclick="calcPress('1')" class="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white font-bold py-3 rounded-xl">1</button>
+                    <button onclick="calcPress('2')" class="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white font-bold py-3 rounded-xl">2</button>
+                    <button onclick="calcPress('3')" class="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white font-bold py-3 rounded-xl">3</button>
+                    <button onclick="calcPress('+')" class="bg-tani-light dark:bg-tani-dark text-tani-dark dark:text-white font-bold py-3 rounded-xl">+</button>
+                    
+                    <button onclick="calcPress('0')" class="col-span-2 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white font-bold py-3 rounded-xl">0</button>
+                    <button onclick="calcPress('.')" class="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white font-bold py-3 rounded-xl">,</button>
+                    <button onclick="calcResult()" class="bg-tani-gold text-tani-dark font-bold py-3 rounded-xl">=</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==============================================
+         HTML TEMPLATES FOR ROUTING
+    =============================================== -->
+
+    <!-- 1. TEMPLATE: BERANDA (HOME) -->
+    <template id="tpl-home">
+        <div class="px-5 space-y-6">
+            <!-- Islamic Quote Banner -->
+            <div class="bg-tani-dark text-white p-6 rounded-3xl relative overflow-hidden shadow-lg mt-2 cursor-pointer">
+                <div class="absolute top-0 right-0 opacity-10 text-9xl -mt-4 -mr-4"><i class="fas fa-mosque"></i></div>
+                <div class="absolute top-4 right-6 text-yellow-300 text-xl animate-pulse"><i class="fas fa-moon"></i></div>
+                <div class="relative z-10 text-center">
+                    <p class="text-2xl font-bold mb-3 font-serif leading-loose text-tani-gold">وَمَا تَوْفِيقِي إِلَّا بِاللَّهِ</p>
+                    <p class="text-[10px] text-gray-200 mb-1">"Dan tidak ada kesuksesanku melainkan dengan pertolongan Allah"</p>
+                    <p class="text-[9px] font-bold text-white/50">(QS. Hud: 88)</p>
+                </div>
+            </div>
+
+            <!-- Quick Actions Grid -->
+            <div class="grid grid-cols-3 gap-y-4 gap-x-2 pt-2">
+                <div onclick="navigate('marketplace')" class="flex flex-col items-center cursor-pointer">
+                    <div class="w-16 h-16 bg-tani-light rounded-2xl flex items-center justify-center text-tani-dark text-2xl mb-1 shadow-sm border border-green-50 dark:bg-gray-800 dark:border-gray-700 dark:text-tani-green transition-transform active:scale-95"><i class="fas fa-store"></i></div>
+                    <span class="text-[10px] text-center font-semibold dark:text-gray-300">Toko Syariah</span>
+                </div>
+                <div onclick="navigate('pembiayaan')" class="flex flex-col items-center cursor-pointer">
+                    <div class="w-16 h-16 bg-tani-light rounded-2xl flex items-center justify-center text-tani-dark text-2xl mb-1 shadow-sm border border-green-50 dark:bg-gray-800 dark:border-gray-700 dark:text-tani-green transition-transform active:scale-95"><i class="fas fa-hand-holding-usd"></i></div>
+                    <span class="text-[10px] text-center font-semibold dark:text-gray-300">Modal Tani</span>
+                </div>
+                <div onclick="navigate('zakat')" class="flex flex-col items-center cursor-pointer">
+                    <div class="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600 text-2xl mb-1 shadow-sm border border-amber-100 dark:bg-amber-950/30 dark:border-amber-900/30 dark:text-amber-400 transition-transform active:scale-95"><i class="fas fa-calculator text-amber-600 dark:text-amber-400"></i></div>
+                    <span class="text-[10px] text-center font-semibold dark:text-gray-300">Zakat Tani</span>
+                </div>
+                <div onclick="navigate('keuangan')" class="flex flex-col items-center cursor-pointer">
+                    <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 text-2xl mb-1 shadow-sm border border-blue-100 dark:bg-blue-950/30 dark:border-blue-900/30 dark:text-blue-400 transition-transform active:scale-95"><i class="fas fa-wallet text-blue-600 dark:text-blue-400"></i></div>
+                    <span class="text-[10px] text-center font-semibold dark:text-gray-300">Buku Kas</span>
+                </div>
+                <div onclick="navigate('edukasi')" class="flex flex-col items-center cursor-pointer">
+                    <div class="w-16 h-16 bg-tani-light rounded-2xl flex items-center justify-center text-tani-dark text-2xl mb-1 shadow-sm border border-green-50 dark:bg-gray-800 dark:border-gray-700 dark:text-tani-green transition-transform active:scale-95"><i class="fas fa-book-open"></i></div>
+                    <span class="text-[10px] text-center font-semibold dark:text-gray-300">Edukasi Tani</span>
+                </div>
+                <div onclick="navigate('wakaf')" class="flex flex-col items-center cursor-pointer">
+                    <div class="w-16 h-16 bg-tani-light rounded-2xl flex items-center justify-center text-tani-dark text-2xl mb-1 shadow-sm border border-green-50 dark:bg-gray-800 dark:border-gray-700 dark:text-tani-green transition-transform active:scale-95"><i class="fas fa-seedling"></i></div>
+                    <span class="text-[10px] text-center font-semibold dark:text-gray-300">Wakaf & Sedekah</span>
+                </div>
+            </div>
+
+            <!-- Categories Horizontal -->
+            <div>
+                <div class="flex justify-between items-end mb-4">
+                    <h2 class="text-base font-bold text-gray-800 dark:text-white">Kategori Panen</h2>
+                    <span class="text-[10px] text-tani-dark font-medium cursor-pointer" onclick="navigate('marketplace')">Lihat Semua ></span>
+                </div>
+                <div class="flex overflow-x-auto gap-4 hide-scrollbar pb-2">
+                    <div class="flex flex-col items-center flex-shrink-0 cursor-pointer" onclick="navigate('marketplace')">
+                        <div class="w-16 h-16 bg-white dark:bg-dark-card rounded-full flex items-center justify-center shadow-sm border border-gray-50 dark:border-gray-800 text-3xl mb-2">🌾</div>
+                        <span class="text-[10px] font-medium dark:text-gray-300">Padi</span>
+                    </div>
+                    <div class="flex flex-col items-center flex-shrink-0 cursor-pointer" onclick="navigate('marketplace')">
+                        <div class="w-16 h-16 bg-white dark:bg-dark-card rounded-full flex items-center justify-center shadow-sm border border-gray-50 dark:border-gray-800 text-3xl mb-2">🥬</div>
+                        <span class="text-[10px] font-medium dark:text-gray-300">Sayuran</span>
+                    </div>
+                    <div class="flex flex-col items-center flex-shrink-0 cursor-pointer" onclick="navigate('marketplace')">
+                        <div class="w-16 h-16 bg-white dark:bg-dark-card rounded-full flex items-center justify-center shadow-sm border border-gray-50 dark:border-gray-800 text-3xl mb-2">🥭</div>
+                        <span class="text-[10px] font-medium dark:text-gray-300">Buah</span>
+                    </div>
+                    <div class="flex flex-col items-center flex-shrink-0 cursor-pointer" onclick="navigate('marketplace')">
+                        <div class="w-16 h-16 bg-white dark:bg-dark-card rounded-full flex items-center justify-center shadow-sm border border-gray-50 dark:border-gray-800 text-3xl mb-2">🍅</div>
+                        <span class="text-[10px] font-medium dark:text-gray-300">Rempah</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Promo Banner -->
+            <div class="bg-gradient-to-r from-tani-dark to-green-700 rounded-3xl overflow-hidden relative shadow-md cursor-pointer" onclick="navigate('marketplace')">
+                <img src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=400&auto=format&fit=crop" class="absolute right-0 top-0 h-full w-1/2 object-cover opacity-50 mix-blend-overlay">
+                <div class="relative z-10 p-6 w-2/3">
+                    <h3 class="text-white text-lg font-bold mb-1 leading-tight">Dari Petani<br>Untuk Negeri</h3>
+                    <p class="text-white/80 text-[10px] mb-4">Dukung petani dengan belanja via akad Murabahah.</p>
+                    <button class="bg-white text-tani-dark text-[10px] font-bold px-4 py-2 rounded-xl">Beli Sekarang</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- 2. TEMPLATE: MARKETPLACE (TOKO) -->
+    <template id="tpl-marketplace">
+        <div class="px-5 space-y-5">
+            <div class="flex gap-2">
+                <div class="relative flex-1">
+                    <i class="fas fa-search absolute left-4 top-3.5 text-gray-400"></i>
+                    <input type="text" id="search-product" placeholder="Cari sayur, buah..." class="w-full pl-11 pr-4 py-3 bg-white dark:bg-dark-card border border-gray-100 dark:border-gray-800 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-tani-dark shadow-sm" onkeyup="filterProducts()">
+                </div>
+                <button onclick="showToast('Fitur Filter akan segera hadir', 'info')" class="w-12 h-12 bg-white dark:bg-dark-card border border-gray-100 dark:border-gray-800 rounded-2xl flex items-center justify-center shadow-sm text-tani-dark dark:text-tani-green">
+                    <i class="fas fa-sliders-h"></i>
+                </button>
+            </div>
+
+            <div class="bg-tani-dark rounded-3xl p-5 relative overflow-hidden flex items-center shadow-md">
+                <div class="z-10 w-2/3">
+                    <h3 class="text-white font-bold text-sm mb-1">Transaksi Halal<br>Hasil Berkah</h3>
+                    <p class="text-white/70 text-[9px]">Belanja mudah dan aman</p>
+                </div>
+                <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=80&w=200&auto=format&fit=crop" class="absolute right-0 top-0 h-full w-1/2 object-cover object-left-top mask-image-gradient opacity-80">
+            </div>
+
+            <div class="flex overflow-x-auto gap-5 hide-scrollbar border-b border-gray-100 dark:border-gray-800 pb-1" id="marketplace-category-tabs">
+                <button onclick="setMarketplaceCategory('Semua', this)" class="cat-tab text-xs font-bold text-tani-dark dark:text-tani-green border-b-2 border-tani-dark dark:border-tani-green pb-2 whitespace-nowrap">Semua</button>
+                <button onclick="setMarketplaceCategory('Sayuran', this)" class="cat-tab text-xs text-gray-400 font-medium pb-2 whitespace-nowrap">Sayuran</button>
+                <button onclick="setMarketplaceCategory('Buah', this)" class="cat-tab text-xs text-gray-400 font-medium pb-2 whitespace-nowrap">Buah</button>
+                <button onclick="setMarketplaceCategory('Rempah', this)" class="cat-tab text-xs text-gray-400 font-medium pb-2 whitespace-nowrap">Rempah</button>
+            </div>
+
+            <div id="product-grid" class="grid grid-cols-2 gap-4 pb-4">
+                <!-- Data di-inject via JS -->
+            </div>
+        </div>
+    </template>
+
+    <!-- 3. TEMPLATE: PEMBIAYAAN SYARIAH (MODAL TANI) -->
+    <template id="tpl-pembiayaan">
+        <div class="px-5 space-y-6">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Modal Pertanian</h2>
+            
+            <!-- Kalkulator Bagi Hasil -->
+            <div class="bg-gradient-to-br from-tani-dark to-green-700 rounded-3xl p-5 text-white shadow-lg relative overflow-hidden">
+                <div class="absolute -right-6 -top-6 text-white/10 text-8xl"><i class="fas fa-calculator"></i></div>
+                <h3 class="font-bold text-sm mb-1 relative z-10">Kalkulator Mudharabah</h3>
+                <p class="text-[9px] text-white/80 mb-4 relative z-10">Simulasi potensi bagi hasil investasi/permodalan.</p>
+                
+                <div class="space-y-3 relative z-10">
+                    <input type="number" id="sim-modal" placeholder="Jumlah Modal (Rp)" class="w-full px-4 py-3 rounded-xl text-gray-800 text-xs focus:outline-none">
+                    <div class="flex gap-2">
+                        <input type="number" id="sim-nisbah" placeholder="Nisbah Petani (%)" class="w-1/2 px-4 py-3 rounded-xl text-gray-800 text-xs focus:outline-none">
+                        <input type="number" id="sim-profit" placeholder="Estimasi Profit (%)" class="w-1/2 px-4 py-3 rounded-xl text-gray-800 text-xs focus:outline-none">
+                    </div>
+                    <button onclick="hitungBagiHasil()" class="w-full bg-tani-gold text-tani-dark font-bold py-3 rounded-xl text-xs">Hitung Simulasi</button>
+                    <div id="sim-result" class="mt-4 pt-3 border-t border-white/20 text-center text-xs hidden">
+                        Potensi Keuntungan Bersih (Petani): <b id="hasil-hitung" class="text-white text-base block mt-1">Rp 0</b>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="bg-white dark:bg-dark-card rounded-3xl p-5 shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-tani-light text-tani-dark text-[9px] font-bold px-3 py-1 rounded-bl-xl border-b border-l border-gray-100 dark:border-gray-700">Terpopuler</div>
+                    <div class="w-10 h-10 bg-tani-light rounded-xl flex items-center justify-center text-tani-dark text-lg mb-2 dark:bg-gray-800 dark:text-tani-green"><i class="fas fa-handshake"></i></div>
+                    <h3 class="font-bold text-base dark:text-white mb-1">Akad Mudharabah</h3>
+                    <p class="text-[10px] font-bold text-tani-gold mb-2">Bagi Hasil Pemodal & Petani</p>
+                    <p class="text-[10px] text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">Investor menyediakan modal penuh, Petani mengelola lahan. Keuntungan dibagi sesuai kesepakatan.</p>
+                    <button onclick="ajukanPembiayaan('Mudharabah')" class="w-full bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 text-tani-dark dark:text-tani-green font-bold text-xs py-3 rounded-xl border border-gray-100 dark:border-gray-700">Ajukan Permodalan</button>
+                </div>
+
+                <div class="bg-white dark:bg-dark-card rounded-3xl p-5 shadow-sm border border-gray-100 dark:border-gray-800">
+                    <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-lg mb-2 dark:bg-gray-800"><i class="fas fa-users"></i></div>
+                    <h3 class="font-bold text-base dark:text-white mb-1">Akad Musyarakah</h3>
+                    <p class="text-[10px] font-bold text-blue-500 mb-2">Kongsi Gabungan Modal</p>
+                    <p class="text-[10px] text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">Penggabungan modal dari beberapa pihak (misal: gabungan petani). Keuntungan dibagi proporsional.</p>
+                    <button onclick="ajukanPembiayaan('Musyarakah')" class="w-full bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 text-tani-dark dark:text-tani-green font-bold text-xs py-3 rounded-xl border border-gray-100 dark:border-gray-700">Ajukan Permodalan</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- 4. TEMPLATE: WAKAF & SEDEKAH -->
+    <template id="tpl-wakaf">
+        <div class="px-5 space-y-6">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Wakaf & Sedekah</h2>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Salurkan harta untuk kesejahteraan petani Dhuafa.</p>
+
+            <div class="bg-white dark:bg-dark-card rounded-3xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-800 mb-6">
+                <div class="h-36 relative">
+                    <img src="https://images.unsplash.com/photo-1516253593875-bd7ba052fbc5?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover">
+                    <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur text-[10px] font-bold px-2 py-1 rounded text-tani-dark">Wakaf Sumur Bor</div>
+                </div>
+                <div class="p-5">
+                    <h3 class="font-bold text-sm dark:text-white mb-2">Irigasi Desa Mekarjaya</h3>
+                    <div class="mb-2 flex justify-between text-[9px] text-gray-500 dark:text-gray-400 font-medium">
+                        <span>Terkumpul: <b class="text-tani-dark dark:text-tani-green text-[10px]" id="wakaf-terkumpul">Rp 12.500.000</b></span>
+                        <span>Target: Rp 20 Jt</span>
+                    </div>
+                    <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2 mb-4 overflow-hidden">
+                        <div id="wakaf-progress-fill" class="bg-tani-dark dark:bg-tani-green h-full rounded-full transition-all duration-1000" style="width: 62.5%"></div>
+                    </div>
+                    
+                    <form onsubmit="prosesDonasi(event)" class="flex gap-2">
+                        <input type="number" id="donasi-nominal" placeholder="Nominal (Min. Rp10rb)" required min="10000" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white">
+                        <button type="submit" class="bg-tani-gold text-tani-dark font-bold px-4 rounded-xl shadow-md text-xs whitespace-nowrap">Donasi</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="bg-tani-light dark:bg-gray-800 p-4 rounded-2xl border border-green-50 dark:border-gray-700 flex gap-3 items-start">
+                <i class="fas fa-shield-alt text-tani-dark dark:text-tani-green mt-0.5"></i>
+                <p class="text-[10px] text-gray-600 dark:text-gray-300 leading-relaxed">Dana dikelola 100% transparan untuk pengadaan alat tani, bibit unggul, dan infrastruktur desa tertinggal.</p>
+            </div>
+        </div>
+    </template>
+
+    <!-- 5. TEMPLATE: EDUKASI -->
+    <template id="tpl-edukasi">
+        <div class="px-5 space-y-6">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Edukasi Syariah</h2>
+            
+            <div class="space-y-4 pb-4">
+                <div onclick="openArticleModal('Pahami Akad Murabahah', 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=600', 'Fiqh Muamalah', 'Akad Murabahah adalah transaksi jual beli di mana bank atau investor menyebutkan jumlah keuntungannya secara transparan kepada nasabah/petani.<br><br><b>Syarat Murabahah:</b><br>1. Penjual memberi tahu biaya modal asli kepada nasabah.<br>2. Kontrak pertama harus sah.<br>3. Kontrak harus terbebas dari riba (bunga berbunga).<br>4. Penjual harus menjelaskan secara jujur semua cacat yang ada pada produk.')" class="flex gap-4 items-center bg-white dark:bg-dark-card p-3 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 cursor-pointer">
+                    <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=150" class="w-20 h-20 rounded-2xl object-cover">
+                    <div class="flex-1">
+                        <span class="text-[8px] bg-tani-light text-tani-dark font-bold px-2 py-0.5 rounded-full mb-1 inline-block">Fiqh Muamalah</span>
+                        <h4 class="font-bold text-xs dark:text-white leading-tight mb-1">Pahami Akad Murabahah</h4>
+                        <p class="text-[9px] text-gray-500 line-clamp-2">Jual beli adil tanpa unsur riba untuk pertanian.</p>
+                    </div>
+                </div>
+                <div onclick="openArticleModal('Syarat Zakat Pertanian', 'https://images.unsplash.com/photo-1563986768494-4dee2763ff0f?q=80&w=600', 'Zakat & Infak', 'Zakat pertanian wajib dikeluarkan oleh setiap muslim pada saat panen, asalkan hasil panennya telah mencapai batas minimum (Nisab).<br><br><b>Nisab Zakat Pertanian:</b><br>Nisabnya adalah 5 wasaq, yang setara dengan sekitar 653 kg gabah kering atau 520 kg beras bersih.<br><br><b>Kadar Zakat yang Harus Dibayar:</b><br>- <b>10%</b> jika lahan diairi secara gratis (dengan air hujan atau mata air alami).<br>- <b>5%</b> jika lahan diairi dengan biaya tambahan (menggunakan mesin pompa, menyewa alat, atau irigasi berbayar).')" class="flex gap-4 items-center bg-white dark:bg-dark-card p-3 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 cursor-pointer">
+                    <img src="https://images.unsplash.com/photo-1563986768494-4dee2763ff0f?q=80&w=150" class="w-20 h-20 rounded-2xl object-cover">
+                    <div class="flex-1">
+                        <span class="text-[8px] bg-yellow-100 text-yellow-800 font-bold px-2 py-0.5 rounded-full mb-1 inline-block">Zakat & Infak</span>
+                        <h4 class="font-bold text-xs dark:text-white leading-tight mb-1">Syarat Zakat Pertanian</h4>
+                        <p class="text-[9px] text-gray-500 line-clamp-2">Kapan petani wajib membayar zakat hasil panen?</p>
+                    </div>
+                </div>
+                <div onclick="openArticleModal('Pupuk Kompos Alami', 'https://images.unsplash.com/photo-1592982537447-6f296a1a4574?q=80&w=600', 'Teknologi Tani', 'Membuat pupuk kompos sendiri tidak hanya sangat menghemat biaya operasional, tetapi juga sangat krusial untuk menyehatkan unsur hara tanah dalam jangka panjang.<br><br><b>Cara Pembuatan:</b><br>1. Kumpulkan sisa dedaunan kering, jerami, dan kotoran ternak (sapi/kambing).<br>2. Cacah bahan agar ukurannya lebih kecil.<br>3. Siramkan campuran larutan EM4 Pertanian dan gula merah (atau tetes tebu) secara merata ke tumpukan bahan.<br>4. Tutup rapat tumpukan tersebut dengan terpal plastik untuk menciptakan kondisi anaerob (tanpa oksigen).<br>5. Buka dan balik tumpukan setiap 1 minggu sekali untuk menjaga sirkulasi.<br>6. Pupuk kompos matang yang siap pakai biasanya berwarna hitam, gembur, dan tidak berbau menyengat setelah 3 hingga 4 minggu.')" class="flex gap-4 items-center bg-white dark:bg-dark-card p-3 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 cursor-pointer">
+                    <img src="https://images.unsplash.com/photo-1592982537447-6f296a1a4574?q=80&w=150" class="w-20 h-20 rounded-2xl object-cover">
+                    <div class="flex-1">
+                        <span class="text-[8px] bg-green-100 text-green-800 font-bold px-2 py-0.5 rounded-full mb-1 inline-block">Teknologi Tani</span>
+                        <h4 class="font-bold text-xs dark:text-white leading-tight mb-1">Pupuk Kompos Alami</h4>
+                        <p class="text-[9px] text-gray-500 line-clamp-2">Cara membuat pupuk untuk hasil panen organik melimpah.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- 6. TEMPLATE: KERANJANG -->
+    <template id="tpl-cart">
+        <div class="px-5 space-y-6">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Keranjang Belanja</h2>
+            <div id="cart-items-container" class="space-y-3"></div>
+            
+            <div id="checkout-section" class="bg-white dark:bg-dark-card rounded-3xl p-5 shadow-sm border border-gray-100 dark:border-gray-800 mt-6 hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-sm font-semibold dark:text-gray-300">Total Tagihan</span>
+                    <span id="cart-total" class="text-lg font-bold text-tani-dark dark:text-tani-green">Rp 0</span>
+                </div>
+                <button onclick="handleCheckout(event)" class="w-full bg-tani-dark text-white font-bold py-4 rounded-2xl shadow-lg">Checkout (Akad Murabahah)</button>
+            </div>
+        </div>
+    </template>
+
+    <!-- 7. TEMPLATE: DASHBOARD & PESANAN (TRANSAKSI) -->
+    <template id="tpl-dashboard">
+        <div class="px-5 space-y-6">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">Transaksi Saya</h2>
+            
+            <!-- Menu Gaya Mockup UI -->
+            <div class="bg-white dark:bg-dark-card rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden p-2">
+                <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-2xl transition-colors" onclick="renderOrderHistory()">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-gray-50 dark:bg-gray-900 rounded-xl flex items-center justify-center text-tani-dark dark:text-tani-green"><i class="far fa-calendar-check"></i></div>
+                        <span class="font-semibold text-sm dark:text-white">Transaksi Aktif</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-300 text-sm"></i>
+                </div>
+                <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-2xl border-t border-gray-50 dark:border-gray-800 transition-colors" onclick="navigate('keuangan')">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-gray-50 dark:bg-gray-900 rounded-xl flex items-center justify-center text-blue-500"><i class="fas fa-wallet"></i></div>
+                        <span class="font-semibold text-sm dark:text-white">Buku Kas (Keuangan)</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-300 text-sm"></i>
+                </div>
+                <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-2xl border-t border-gray-50 dark:border-gray-800 transition-colors" onclick="showToast('Belum ada riwayat pembelian terdahulu', 'info')">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-gray-50 dark:bg-gray-900 rounded-xl flex items-center justify-center text-tani-dark dark:text-tani-green"><i class="fas fa-receipt"></i></div>
+                        <span class="font-semibold text-sm dark:text-white">Riwayat Pembelian</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-300 text-sm"></i>
+                </div>
+                <div class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-2xl border-t border-gray-50 dark:border-gray-800 transition-colors" onclick="showToast('Sertifikat wakaf Anda belum tersedia', 'info')">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-gray-50 dark:bg-gray-900 rounded-xl flex items-center justify-center text-tani-dark dark:text-tani-green"><i class="fas fa-certificate"></i></div>
+                        <span class="font-semibold text-sm dark:text-white">Sertifikat Wakaf</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-300 text-sm"></i>
+                </div>
+            </div>
+
+            <!-- Tempat memunculkan riwayat pesanan (disembunyikan secara default) -->
+            <div id="dashboard-dynamic-content" class="pt-2 hidden"></div>
+        </div>
+    </template>
+
+    <!-- 8. TEMPLATE: AUTHENTICATION (DAFTAR / MASUK) -->
+    <template id="tpl-auth">
+        <div class="px-5 flex flex-col items-center justify-center min-h-[60vh]">
+            <div class="w-20 h-20 bg-tani-light rounded-full flex items-center justify-center mb-6 text-tani-dark text-4xl shadow-sm">
+                <i class="fas fa-leaf"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2" id="auth-title">Daftar Akun Baru</h2>
+            <p class="text-xs text-gray-500 mb-8 text-center" id="auth-subtitle">Lengkapi data diri Anda</p>
+            
+            <form onsubmit="handleAuth(event)" class="w-full space-y-4">
+                <div id="register-fields" class="space-y-4">
+                    <input type="text" id="auth-name" placeholder="Nama Lengkap" class="w-full px-5 py-4 bg-white dark:bg-dark-card rounded-2xl text-sm border border-gray-100 dark:border-gray-800 focus:outline-none dark:text-white">
+                </div>
+                <input type="email" id="auth-email" placeholder="Email" required class="w-full px-5 py-4 bg-white dark:bg-dark-card rounded-2xl text-sm border border-gray-100 dark:border-gray-800 focus:outline-none dark:text-white" value="demo@tani.id">
+                <input type="password" placeholder="Password" required class="w-full px-5 py-4 bg-white dark:bg-dark-card rounded-2xl text-sm border border-gray-100 dark:border-gray-800 focus:outline-none dark:text-white" value="123456">
+                
+                <button type="submit" id="auth-submit-btn" class="w-full bg-tani-dark text-white font-bold py-4 rounded-2xl mt-4 shadow-lg shadow-green-900/20 active:bg-green-800">Daftar Sekarang</button>
+            </form>
+            
+            <p class="text-center mt-8 text-xs text-gray-600 dark:text-gray-400">
+                <span id="auth-switch-text">Sudah punya akun?</span> <span onclick="toggleAuthMode()" id="auth-switch-btn" class="text-tani-dark font-bold cursor-pointer hover:underline">Masuk</span>
+            </p>
+        </div>
+    </template>
+
+    <!-- 9. TEMPLATE: KEUANGAN (BUKU KAS) -->
+    <template id="tpl-keuangan">
+        <div class="px-5 space-y-6">
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Buku Kas Tani</h2>
+                <button onclick="openCalculator()" class="w-10 h-10 bg-white dark:bg-dark-card border border-gray-100 dark:border-gray-800 rounded-full shadow-sm text-tani-dark dark:text-tani-green flex items-center justify-center">
+                    <i class="fas fa-calculator"></i>
+                </button>
+            </div>
+
+            <!-- Kartu Saldo -->
+            <div class="bg-tani-dark rounded-3xl p-6 text-white shadow-lg relative overflow-hidden">
+                <div class="absolute -right-4 -bottom-4 opacity-10 text-8xl"><i class="fas fa-wallet"></i></div>
+                <p class="text-xs text-white/80 mb-1">Total Saldo Saat Ini</p>
+                <h3 id="kas-saldo-total" class="text-3xl font-bold mb-4 text-tani-gold">Rp 0</h3>
+                <div class="flex justify-between border-t border-white/20 pt-3">
+                    <div>
+                        <p class="text-[9px] text-white/70">Pemasukan</p>
+                        <p id="kas-total-in" class="text-sm font-bold text-green-300">Rp 0</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[9px] text-white/70">Pengeluaran</p>
+                        <p id="kas-total-out" class="text-sm font-bold text-red-300">Rp 0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Tambah Catatan -->
+            <div class="bg-white dark:bg-dark-card rounded-3xl p-5 shadow-sm border border-gray-100 dark:border-gray-800">
+                <h3 class="font-bold text-sm dark:text-white mb-4">Catat Transaksi Baru</h3>
+                <form onsubmit="handleTambahKas(event)" class="space-y-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <button type="button" id="btn-kas-in" onclick="setKasType('in')" class="kas-type-btn bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 font-bold py-2 rounded-xl text-xs border-2 border-green-500">Pemasukan</button>
+                        <button type="button" id="btn-kas-out" onclick="setKasType('out')" class="kas-type-btn bg-gray-50 text-gray-500 dark:bg-gray-800 dark:text-gray-400 font-bold py-2 rounded-xl text-xs border-2 border-transparent">Pengeluaran</button>
+                    </div>
+                    <input type="hidden" id="kas-type" value="in">
+                    <input type="text" id="kas-desc" placeholder="Keterangan (Cth: Jual Gabah)" required class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white">
+                    <input type="number" id="kas-amount" placeholder="Nominal (Rp)" required class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white">
+                    <button type="submit" class="w-full bg-tani-gold text-tani-dark font-bold py-3 rounded-xl shadow-md text-xs">Simpan Catatan</button>
+                </form>
+            </div>
+
+            <!-- Riwayat Catatan -->
+            <div>
+                <h3 class="font-bold text-sm dark:text-white mb-3">Riwayat Transaksi</h3>
+                <div id="kas-history-container" class="space-y-3 pb-4">
+                    <!-- Data Di-inject Via JS -->
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- 10. TEMPLATE: AKUN (PROFIL) -->
+    <template id="tpl-akun">
+        <div class="px-5 space-y-6">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Profil Saya</h2>
+
+            <!-- Profile Header Card -->
+            <div class="bg-tani-dark rounded-3xl p-6 text-white shadow-lg flex items-center gap-4 relative overflow-hidden">
+                <div class="absolute -right-4 -bottom-4 opacity-10 text-8xl"><i class="fas fa-leaf"></i></div>
+                <img src="" id="akun-avatar" class="w-16 h-16 rounded-full border-2 border-tani-gold object-cover relative z-10 shadow-sm">
+                <div class="relative z-10">
+                    <h3 id="akun-name" class="font-bold text-lg leading-tight mb-0.5">Nama User</h3>
+                    <p id="akun-email" class="text-[10px] text-white/80 mb-2">email@example.com</p>
+                    <span id="akun-role" class="bg-tani-gold text-tani-dark text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">Pembeli</span>
+                </div>
+            </div>
+
+            <!-- Form Edit Profile -->
+            <div class="bg-white dark:bg-dark-card rounded-3xl p-5 shadow-sm border border-gray-100 dark:border-gray-800">
+                <h3 class="font-bold text-sm dark:text-white mb-4">Informasi Pribadi</h3>
+                <form onsubmit="saveProfile(event)" class="space-y-3">
+                    <div>
+                        <label class="text-[10px] text-gray-500 dark:text-gray-400 ml-1">Nama Lengkap</label>
+                        <input type="text" id="edit-name" required class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-gray-500 dark:text-gray-400 ml-1">No. WhatsApp</label>
+                        <input type="tel" id="edit-phone" placeholder="Contoh: 081234567890" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-gray-500 dark:text-gray-400 ml-1">Alamat Pengiriman</label>
+                        <textarea id="edit-address" rows="2" placeholder="Masukkan alamat lengkap" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-tani-dark active:bg-green-800 text-white font-bold py-3 rounded-xl shadow-md text-xs mt-2 transition-colors">Simpan Perubahan</button>
+                </form>
+            </div>
+
+            <!-- Pengaturan -->
+            <div class="bg-white dark:bg-dark-card rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden p-2">
+                <div class="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-2xl transition-colors" onclick="toggleDarkMode()">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-gray-50 dark:bg-gray-900 rounded-xl flex items-center justify-center text-tani-dark dark:text-tani-green"><i class="fas fa-moon"></i></div>
+                        <span class="font-semibold text-xs dark:text-white">Mode Gelap (Dark Mode)</span>
+                    </div>
+                    <i class="fas fa-sync-alt text-gray-300 text-xs"></i>
+                </div>
+                <div class="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-2xl border-t border-gray-50 dark:border-gray-800 transition-colors" onclick="showToast('Notifikasi telah diaktifkan', 'info')">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-gray-50 dark:bg-gray-900 rounded-xl flex items-center justify-center text-tani-dark dark:text-tani-green"><i class="fas fa-bell"></i></div>
+                        <span class="font-semibold text-xs dark:text-white">Notifikasi</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-300 text-xs"></i>
+                </div>
+            </div>
+
+            <!-- Bantuan & Logout -->
+            <div class="bg-white dark:bg-dark-card rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden p-2 mb-4">
+                <div class="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-2xl transition-colors" onclick="showToast('Pusat Bantuan sedang dalam pengembangan', 'info')">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-gray-50 dark:bg-gray-900 rounded-xl flex items-center justify-center text-blue-500"><i class="fas fa-question-circle"></i></div>
+                        <span class="font-semibold text-xs dark:text-white">Pusat Bantuan & Syarat</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-300 text-xs"></i>
+                </div>
+            </div>
+
+            <button onclick="logout()" class="w-full text-red-500 py-4 rounded-2xl font-bold border border-red-100 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10 active:bg-red-100 transition-colors">Keluar Akun</button>
+        </div>
+    </template>
+
+    <!-- 11. TEMPLATE: ZAKAT PERTANIAN -->
+    <template id="tpl-zakat">
+        <div class="px-5 space-y-6 pb-6">
+            <div class="flex items-center gap-3">
+                <button onclick="navigate('home')" class="w-9 h-9 rounded-full bg-white dark:bg-dark-card shadow-sm border border-gray-100 dark:border-gray-800 flex items-center justify-center text-tani-dark dark:text-tani-green">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Zakat Pertanian</h2>
+            </div>
+
+            <!-- Sharia Info Card -->
+            <div class="bg-gradient-to-br from-amber-500 to-amber-700 rounded-3xl p-5 text-white shadow-md relative overflow-hidden">
+                <div class="absolute -right-6 -bottom-6 text-white/10 text-9xl"><i class="fas fa-wheat-awn"></i></div>
+                <h3 class="font-bold text-sm mb-1 relative z-10">Syarat & Ketentuan Zakat</h3>
+                <p class="text-[10px] text-amber-50/90 leading-relaxed relative z-10">
+                    Zakat hasil pertanian wajib ditunaikan setiap panen jika mencapai **Nisab 5 Wasq (setara 653 kg gabah kering)**.
+                </p>
+                <div class="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-white/20 text-[9px] text-amber-100 font-medium relative z-10">
+                    <div>
+                        <p class="font-bold text-white text-[10px]">Kadar Zakat 10%</p>
+                        <p>Menggunakan pengairan alami (hujan, air sungai, mata air bebas biaya).</p>
+                    </div>
+                    <div>
+                        <p class="font-bold text-white text-[10px]">Kadar Zakat 5%</p>
+                        <p>Menggunakan pengairan buatan (pompa bensin/listrik, air berbayar).</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Zakat -->
+            <div class="bg-white dark:bg-dark-card rounded-3xl p-5 shadow-sm border border-gray-100 dark:border-gray-800">
+                <h3 class="font-bold text-sm dark:text-white mb-4"><i class="fas fa-calculator text-amber-500 mr-1.5"></i>Hitung Zakat Panen</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-500 dark:text-gray-400 ml-1">Berat Hasil Panen (kg)</label>
+                        <div class="relative mt-1">
+                            <input type="number" id="zakat-berat" placeholder="Contoh: 800" required class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white">
+                            <span class="absolute right-4 top-3 text-xs font-bold text-gray-400">kg</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-500 dark:text-gray-400 ml-1">Estimasi Harga Jual per kg (Rp)</label>
+                        <div class="relative mt-1">
+                            <input type="number" id="zakat-harga" placeholder="Contoh: 7000" required class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white">
+                            <span class="absolute right-4 top-3 text-xs font-bold text-gray-400">/ kg</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-500 dark:text-gray-400 ml-1">Metode Pengairan / Irigasi</label>
+                        <select id="zakat-pengairan" class="w-full mt-1 px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white">
+                            <option value="alami">Tadah Hujan / Aliran Sungai Bebas (Zakat 10%)</option>
+                            <option value="buatan">Pompa Air / Air Berbayar / Manual (Zakat 5%)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-500 dark:text-gray-400 ml-1">Biaya Operasional & Pengairan (Rp - Opsional)</label>
+                        <input type="number" id="zakat-biaya" placeholder="Contoh: 500000" class="w-full mt-1 px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white">
+                        <p class="text-[8px] text-gray-400 mt-1 ml-1 leading-normal">Bila diisi, nominal ini dapat dikurangkan sebagai pengurang zakat bruto menurut ijma ulama kontemporer.</p>
+                    </div>
+
+                    <button onclick="hitungZakatTani()" class="w-full bg-tani-dark hover:bg-green-800 text-white font-bold py-3.5 rounded-xl shadow-md text-xs mt-2 transition-transform active:scale-[0.98]">
+                        Hitung Kewajiban Zakat
+                    </button>
+                </div>
+            </div>
+
+            <!-- Result Box -->
+            <div id="zakat-result-box" class="bg-white dark:bg-dark-card rounded-3xl p-5 shadow-sm border border-gray-100 dark:border-gray-800 hidden transition-all duration-300">
+                <div class="text-center" id="zakat-res-title">
+                    <!-- Title badge injected dynamically -->
+                </div>
+                
+                <div id="zakat-res-nisab-status" class="text-center mb-4 text-xs text-gray-600 dark:text-gray-300 px-2 leading-relaxed">
+                    <!-- Nisab status text injected -->
+                </div>
+
+                <div class="border-t border-b dark:border-gray-800 py-3 my-4 space-y-2 text-xs" id="zakat-res-rincian">
+                    <!-- Detailed calculation list -->
+                </div>
+
+                <div class="bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30 rounded-2xl p-4 text-center">
+                    <p class="text-[10px] text-gray-500 dark:text-gray-400 uppercase font-bold tracking-wider mb-1">Zakat yang Wajib Dikeluarkan</p>
+                    <h4 class="text-2xl font-black text-amber-600 dark:text-amber-400 mb-1" id="zakat-res-total">0 kg</h4>
+                    <p class="text-xs text-gray-400 dark:text-gray-500">atau setara dengan nilai uang sebesar</p>
+                    <h5 class="text-lg font-bold text-gray-800 dark:text-white mt-1" id="zakat-res-total-rp">Rp 0</h5>
+                </div>
+
+                <div class="mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-xl flex gap-3 items-start border border-gray-100 dark:border-gray-700">
+                    <i class="fas fa-info-circle text-amber-500 mt-0.5 text-sm flex-shrink-0"></i>
+                    <p class="text-[9px] text-gray-500 dark:text-gray-400 leading-normal" id="zakat-res-explanation">
+                        Zakat pertanian dikeluarkan segera setelah panen selesai dihitung.
+                    </p>
+                </div>
+
+                <div class="flex gap-2 mt-4">
+                    <button onclick="navigate('wakaf')" class="w-2/3 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-xl text-xs shadow-md transition-colors">
+                        Salurkan Zakat
+                    </button>
+                    <button onclick="initZakat()" class="w-1/3 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 text-gray-600 dark:text-gray-300 font-bold py-3 rounded-xl text-xs border border-gray-100 dark:border-gray-700 transition-colors">
+                        Ulangi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- ==============================================
+         JAVASCRIPT LOGIC 
+    =============================================== -->
+    <script>
+        // Global Image Error Handler (Fallback to Placeholder)
+        window.addEventListener('error', function(e) {
+            if (e.target && e.target.tagName && e.target.tagName.toLowerCase() === 'img') {
+                e.target.onerror = null; 
+                e.target.src = 'https://placehold.co/400x400/F0FDF4/14532D?text=Tani+Barokah&font=Montserrat';
+            }
+        }, true);
+
+        // Core App Data & Storage
+        const storage = {
+            get: (k, d) => JSON.parse(localStorage.getItem(k)) || d,
+            set: (k, v) => localStorage.setItem(k, JSON.stringify(v))
+        };
+
+        const defaultProducts = [
+            { id: 3, name: 'Cabai Merah Keriting', category: 'Sayuran', price: 28000, weight: '1 kg', rating: 4.7, farmer: 'Bu Yanti', img: 'https://images.unsplash.com/photo-1605807616999-bc36fb489069?q=80&w=400', desc: 'Cabai segar pedas alami baru panen.' },
+            { id: 4, name: 'Tomat Segar Hidroponik', category: 'Sayuran', price: 16000, weight: '1 kg', rating: 4.9, farmer: 'Kelompok Tani', img: 'https://images.unsplash.com/photo-1561136594-7f68413baa99?q=80&w=400', desc: 'Tomat segar hidroponik bebas pestisida kimia.' },
+            { id: 5, name: 'Bayam Hijau Cabut', category: 'Sayuran', price: 5000, weight: '1 ikat', rating: 4.6, farmer: 'Pak Mamat', img: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?q=80&w=400', desc: 'Bayam segar dipetik pagi hari, kaya akan zat besi.' },
+            { id: 6, name: 'Brokoli Hijau', category: 'Sayuran', price: 22000, weight: '500 gram', rating: 4.8, farmer: 'Desa Agro', img: 'https://images.unsplash.com/photo-1583663848850-46af132dc08e?q=80&w=400', desc: 'Brokoli hijau segar kualitas super, cocok untuk menu sehat keluarga.' },
+            { id: 7, name: 'Wortel Manis Berastagi', category: 'Sayuran', price: 14000, weight: '1 kg', rating: 4.7, farmer: 'Pak Budi', img: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?q=80&w=400', desc: 'Wortel manis segar langsung dari dataran tinggi.' },
+            { id: 8, name: 'Pisang Cavendish', category: 'Buah', price: 25000, weight: '1 sisir', rating: 4.9, farmer: 'Kebun Raya Tani', img: 'https://images.unsplash.com/photo-1603833665858-e61d17a86224?q=80&w=400', desc: 'Pisang Cavendish mulus tanpa bintik, manis dan mengenyangkan.' },
+            { id: 9, name: 'Mangga Harumanis', category: 'Buah', price: 35000, weight: '1 kg', rating: 4.8, farmer: 'Pak Joko', img: 'https://images.unsplash.com/photo-1553279768-865429fa0078?q=80&w=400', desc: 'Mangga matang pohon, daging tebal, manis, dan harum.' },
+            { id: 10, name: 'Alpukat Mentega', category: 'Buah', price: 32000, weight: '1 kg', rating: 4.9, farmer: 'Kelompok Tani', img: 'https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?q=80&w=400', desc: 'Alpukat super mentega, daging kuning tebal dan tidak berserat.' },
+            { id: 11, name: 'Kunyit Segar', category: 'Rempah', price: 18000, weight: '1 kg', rating: 4.7, farmer: 'Mbah Darmo', img: 'https://images.unsplash.com/photo-1613140837372-96cb3479a0db?q=80&w=400', desc: 'Kunyit segar kaya khasiat, cocok untuk bumbu masak atau jamu.' },
+            { id: 12, name: 'Bawang Merah Brebes', category: 'Rempah', price: 42000, weight: '1 kg', rating: 4.8, farmer: 'Koperasi Maju', img: 'https://images.unsplash.com/photo-1620574387735-3624d75b2dbc?q=80&w=400', desc: 'Bawang merah super Brebes, wangi tajam dan tidak mudah busuk.' },
+            
+            // PRODUK BARU TAMBAHAN
+            { id: 13, name: 'Kentang Dieng', category: 'Sayuran', price: 20000, weight: '1 kg', rating: 4.8, farmer: 'Kelompok Tani', img: 'https://images.unsplash.com/photo-1518977956812-cd3dad34ec4d?q=80&w=400', desc: 'Kentang segar dari dataran tinggi Dieng, cocok untuk aneka masakan.' },
+            { id: 14, name: 'Bawang Putih Kating', category: 'Rempah', price: 38000, weight: '1 kg', rating: 4.9, farmer: 'Mbah Darmo', img: 'https://images.unsplash.com/photo-1589530495147-380d388e2c04?q=80&w=400', desc: 'Bawang putih kating asli, aroma lebih kuat dan sedap.' },
+            { id: 15, name: 'Jahe Merah', category: 'Rempah', price: 25000, weight: '500 gram', rating: 4.7, farmer: 'Pak Budi', img: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?q=80&w=400', desc: 'Jahe merah pilihan, berkhasiat menghangatkan tubuh dan stamina.' },
+            { id: 16, name: 'Jeruk Medan', category: 'Buah', price: 28000, weight: '1 kg', rating: 4.8, farmer: 'Koperasi Maju', img: 'https://images.unsplash.com/photo-1549888834-3ec93abae044?q=80&w=400', desc: 'Jeruk Medan manis segar banyak air, langsung petik.' },
+            { id: 17, name: 'Apel Malang', category: 'Buah', price: 30000, weight: '1 kg', rating: 4.6, farmer: 'Kebun Raya Tani', img: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6faa6?q=80&w=400', desc: 'Apel Malang hijau, renyah dan memiliki rasa manis asam yang khas.' },
+            { id: 18, name: 'Kangkung Segar', category: 'Sayuran', price: 4500, weight: '1 ikat', rating: 4.9, farmer: 'Bu Yanti', img: 'https://images.unsplash.com/photo-1603048297172-c92544798d5e?q=80&w=400', desc: 'Kangkung darat hijau segar, ditanam organik.' }
+        ];
+        
+        let products = storage.get('tb_prod_v8', defaultProducts);
+        if(products.length < 16) { products = defaultProducts; storage.set('tb_prod_v8', products); }
+
+        let cart = storage.get('tb_cart_v4', []);
+        let orders = storage.get('tb_order_v4', []); 
+        let currentUser = storage.get('tb_user_final', null); 
+        let kasTransactions = storage.get('tb_kas_final', []); // Data Keuangan
+        
+        let isLoginMode = false; // Default: Daftar Dulu
+        let currentMarketplaceCategory = 'Semua';
+        let currentWakaf = 12500000;
+        let calcValue = ''; // Calculator state
+
+        const formatRp = (num) => 'Rp ' + num.toLocaleString('id-ID');
+
+        // UI Interactions
+        function showToast(msg, type='success') {
+            const c = document.getElementById('toast-container');
+            const t = document.createElement('div');
+            t.className = `flex items-center gap-3 p-3 bg-white dark:bg-dark-card rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 toast-enter ${type==='error'?'border-l-4 border-l-red-500': type==='info'?'border-l-4 border-l-blue-500':'border-l-4 border-l-tani-dark'}`;
+            t.innerHTML = `<i class="fas ${type==='error'?'fa-exclamation-circle text-red-500': type==='info'?'fa-info-circle text-blue-500':'fa-check-circle text-tani-dark'}"></i><div class="text-xs font-bold dark:text-white">${msg}</div>`;
+            c.appendChild(t); setTimeout(() => { if(t.parentElement) { t.style.opacity='0'; setTimeout(()=>t.remove(), 300); } }, 2500);
+        }
+
+        function toggleDarkMode() { document.documentElement.classList.toggle('dark'); }
+
+        function setActiveNav(page) {
+            const navMap = { 
+                'home':'home', 'marketplace':'marketplace', 'edukasi':'home', 
+                'pembiayaan':'home', 'wakaf':'home', 'zakat':'home', 'dashboard':'dashboard', 
+                'cart':'dashboard', 'login':'akun', 'register':'akun', 'keuangan':'dashboard', 'akun':'akun'
+            };
+            const active = navMap[page] || 'home';
+            ['home', 'marketplace', 'chat', 'dashboard', 'akun'].forEach(p => {
+                const b = document.getElementById(`nav-btn-${p}`); if(b) b.classList.remove('nav-item-active');
+            });
+            const b = document.getElementById(`nav-btn-${active}`); if(b) b.classList.add('nav-item-active');
+        }
+
+        function navigate(page) {
+            // LOGIN GATE: Wajib login
+            if (!currentUser && page !== 'login' && page !== 'register') {
+                page = 'register';
+            }
+
+            const main = document.getElementById('app-content');
+            window.scrollTo(0,0); setActiveNav(page);
+
+            const header = document.getElementById('app-header');
+            const bottomNav = document.getElementById('bottom-nav');
+            
+            if (page === 'login' || page === 'register') {
+                if(header) header.classList.add('hidden');
+                if(bottomNav) bottomNav.classList.add('hidden');
+                main.classList.remove('pt-20', 'pb-28');
+            } else {
+                if(header) header.classList.remove('hidden');
+                if(bottomNav) bottomNav.classList.remove('hidden');
+                main.classList.add('pt-20', 'pb-28');
+            }
+
+            if(page === 'login' || page === 'register') {
+                isLoginMode = page === 'login'; main.innerHTML = document.getElementById('tpl-auth').innerHTML; updateAuthUI(); return;
+            }
+
+            const tpl = document.getElementById(`tpl-${page}`);
+            if(tpl) {
+                main.innerHTML = tpl.innerHTML;
+                if(page === 'marketplace') { currentMarketplaceCategory = 'Semua'; renderProducts(products); }
+                if(page === 'cart') renderCart();
+                if(page === 'dashboard') renderDashboardContent();
+                if(page === 'keuangan') renderKeuangan();
+                if(page === 'zakat') initZakat();
+                if(page === 'akun') renderAkun();
+            }
+        }
+
+        function navigateDashboard() { !currentUser ? navigate('register') : navigate('dashboard'); }
+        function navigateAkun() { !currentUser ? navigate('register') : navigate('akun'); }
+
+        // Auth Logic
+        function toggleAuthMode() { isLoginMode = !isLoginMode; updateAuthUI(); }
+        function updateAuthUI() {
+            document.getElementById('auth-title').textContent = isLoginMode ? 'Masuk' : 'Daftar Akun Baru';
+            document.getElementById('auth-subtitle').textContent = isLoginMode ? 'Silakan login untuk melanjutkan' : 'Lengkapi data diri Anda';
+            document.getElementById('auth-submit-btn').textContent = isLoginMode ? 'Masuk' : 'Daftar Sekarang';
+            document.getElementById('auth-switch-text').textContent = isLoginMode ? 'Belum punya akun?' : 'Sudah punya akun?';
+            document.getElementById('auth-switch-btn').textContent = isLoginMode ? 'Daftar' : 'Masuk';
+            const r = document.getElementById('register-fields'); isLoginMode ? r.classList.add('hidden') : r.classList.remove('hidden');
+        }
+        function handleAuth(e) {
+            e.preventDefault(); const em = document.getElementById('auth-email').value;
+            currentUser = isLoginMode ? (storage.get('tb_user_final') || { name: 'Sobat Tani', email: em }) : { name: document.getElementById('auth-name').value, email: em };
+            storage.set('tb_user_final', currentUser); showToast(`Selamat datang!`); updateHeader(); navigate('home');
+        }
+        function logout() { currentUser = null; storage.set('tb_user_final', null); showToast('Berhasil keluar'); updateHeader(); navigate('home'); }
+        function updateHeader() {
+            const nameEl = document.getElementById('header-greeting-name');
+            nameEl.textContent = currentUser ? currentUser.name.split(' ')[0] : 'Sahabat Tani';
+            const iconAkun = document.getElementById('nav-icon-akun');
+            const textAkun = document.getElementById('nav-text-akun');
+            if (iconAkun && textAkun) {
+                iconAkun.className = `${currentUser?'fas':'far'} fa-user text-xl mb-1.5`;
+                textAkun.textContent = currentUser ? 'Akun' : 'Daftar'; 
+            }
+        }
+
+        // --- AKUN & PROFIL LOGIC ---
+        function renderAkun() {
+            if(!currentUser) return navigate('login');
+            document.getElementById('akun-name').textContent = currentUser.name;
+            document.getElementById('akun-email').textContent = currentUser.email;
+            document.getElementById('akun-role').textContent = currentUser.role || 'Pembeli';
+            document.getElementById('akun-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.name)}&background=D4AF37&color=14532D`;
+            
+            document.getElementById('edit-name').value = currentUser.name;
+            document.getElementById('edit-phone').value = currentUser.phone || '';
+            document.getElementById('edit-address').value = currentUser.address || '';
+        }
+
+        function saveProfile(e) {
+            e.preventDefault();
+            currentUser.name = document.getElementById('edit-name').value;
+            currentUser.phone = document.getElementById('edit-phone').value;
+            currentUser.address = document.getElementById('edit-address').value;
+            
+            storage.set('tb_user_final', currentUser);
+            showToast("Profil berhasil diperbarui!");
+            updateHeader();
+            renderAkun(); // Refresh display
+        }
+
+        // Marketplace Logic
+        function renderProducts(data) {
+            const g = document.getElementById('product-grid'); if(!g) return;
+            if(data.length === 0) { g.innerHTML = '<div class="col-span-2 text-center py-10 text-gray-400 text-xs">Produk tidak ditemukan.</div>'; return; }
+            g.innerHTML = data.map(p => `
+                <div class="bg-white dark:bg-dark-card rounded-3xl shadow-sm border border-gray-50 dark:border-gray-800 relative p-2.5 pb-10">
+                    <img src="${p.img}" class="w-full h-28 object-cover rounded-2xl mb-3 cursor-pointer" onclick="openProductModal(${p.id})">
+                    <div class="px-1 cursor-pointer" onclick="openProductModal(${p.id})">
+                        <h3 class="font-bold text-[11px] dark:text-white line-clamp-2">${p.name}</h3>
+                        <p class="text-[9px] text-gray-400 mb-1">${p.weight}</p>
+                        <p class="text-tani-dark dark:text-tani-green font-bold text-sm">${formatRp(p.price)}</p>
+                    </div>
+                    <button onclick="addToCart(${p.id})" class="absolute bottom-3 right-3 bg-tani-dark dark:bg-tani-green text-white w-8 h-8 rounded-full shadow-md active:scale-90"><i class="fas fa-plus text-xs"></i></button>
+                </div>`).join('');
+        }
+        function filterProducts() {
+            const s = document.getElementById('search-product')?.value.toLowerCase() || '';
+            renderProducts(products.filter(p => p.name.toLowerCase().includes(s) && (currentMarketplaceCategory === 'Semua' || p.category === currentMarketplaceCategory || p.category.includes(currentMarketplaceCategory))));
+        }
+        function setMarketplaceCategory(cat, btn) {
+            currentMarketplaceCategory = cat;
+            document.querySelectorAll('.cat-tab').forEach(t => t.className = "cat-tab text-xs text-gray-400 font-medium pb-2 whitespace-nowrap");
+            btn.className = "cat-tab text-xs font-bold text-tani-dark dark:text-tani-green border-b-2 border-tani-dark dark:border-tani-green pb-2 whitespace-nowrap";
+            filterProducts();
+        }
+
+        // Modal Logic
+        function openProductModal(id) {
+            const p = products.find(x => x.id === id); if(!p) return;
+            document.getElementById('modal-img').src = p.img; document.getElementById('modal-title').textContent = p.name;
+            document.getElementById('modal-category').textContent = p.category; document.getElementById('modal-price').textContent = formatRp(p.price);
+            document.getElementById('modal-farmer').textContent = p.farmer; document.getElementById('modal-desc').textContent = p.desc;
+            document.getElementById('modal-qty').value = 1;
+            document.getElementById('modal-add-btn').onclick = () => { addToCart(p.id, parseInt(document.getElementById('modal-qty').value)); closeProductModal(); };
+            document.getElementById('product-modal').classList.remove('hidden'); document.body.style.overflow = 'hidden';
+        }
+        function closeProductModal() { document.getElementById('product-modal').classList.add('hidden'); document.body.style.overflow = 'auto'; }
+        function updateModalQty(c) { const i = document.getElementById('modal-qty'); i.value = Math.max(1, parseInt(i.value) + c); }
+
+        // Cart Logic
+        function updateBadge() {
+            const t = cart.reduce((s, i) => s + i.qty, 0); const b = document.getElementById('header-cart-badge');
+            if(b) { b.textContent = t; t > 0 ? b.classList.remove('hidden') : b.classList.add('hidden'); }
+        }
+        function addToCart(id, q = 1) {
+            const p = products.find(x => x.id === id); const ex = cart.find(i => i.id === id);
+            ex ? ex.qty += q : cart.push({ ...p, qty: q });
+            storage.set('tb_cart_v4', cart); updateBadge(); showToast('Masuk Keranjang!');
+        }
+        function renderCart() {
+            const c = document.getElementById('cart-items-container'); const sec = document.getElementById('checkout-section');
+            if(!c) return;
+            if(cart.length === 0) { c.innerHTML = `<div class="py-12 text-center text-gray-400"><i class="fas fa-shopping-basket text-4xl mb-3 opacity-30"></i><p class="text-xs">Keranjang masih kosong</p></div>`; sec.classList.add('hidden'); return; }
+            sec.classList.remove('hidden'); let sub = 0;
+            c.innerHTML = cart.map((i, idx) => {
+                sub += i.price * i.qty;
+                return `<div class="bg-white dark:bg-dark-card rounded-3xl p-3 flex gap-3 shadow-sm border border-gray-50 dark:border-gray-800"><img src="${i.img}" class="w-20 h-20 object-cover rounded-2xl"><div class="flex-1 flex flex-col justify-center"><h4 class="font-bold text-[11px] dark:text-white">${i.name}</h4><p class="font-bold text-tani-dark dark:text-tani-green text-sm mt-0.5">${formatRp(i.price)}</p><div class="flex justify-between mt-2"><div class="flex items-center bg-gray-50 dark:bg-gray-800 rounded-xl"><button onclick="updateCartQty(${idx}, -1)" class="w-7 text-gray-500">-</button><span class="w-6 text-center text-xs font-bold dark:text-white">${i.qty}</span><button onclick="updateCartQty(${idx}, 1)" class="w-7 text-gray-500">+</button></div><button onclick="removeFromCart(${idx})" class="text-red-400 text-sm p-1"><i class="fas fa-trash-alt"></i></button></div></div></div>`;
+            }).join('');
+            document.getElementById('cart-total').textContent = formatRp(sub);
+        }
+        function updateCartQty(idx, c) { cart[idx].qty = Math.max(1, cart[idx].qty + c); storage.set('tb_cart_v4', cart); renderCart(); updateBadge(); }
+        function removeFromCart(idx) { cart.splice(idx, 1); storage.set('tb_cart_v4', cart); renderCart(); updateBadge(); }
+        function handleCheckout(e) {
+            if(!currentUser) return showToast("Silakan login dulu", "error"), navigate('login');
+            orders.unshift({ id: 'ORD-' + Math.floor(Math.random() * 10000), items: [...cart], total: cart.reduce((s, i) => s + (i.price * i.qty), 0), status: 'Diproses' });
+            storage.set('tb_order_v4', orders); cart = []; storage.set('tb_cart_v4', cart); updateBadge();
+            showToast("Pesanan Murabahah Berhasil!"); navigate('dashboard');
+            setTimeout(() => renderOrderHistory(), 100);
+        }
+
+        // Dashboard & Transactions
+        function renderDashboardContent() {
+            const c = document.getElementById('dashboard-dynamic-content');
+            if(c) c.classList.add('hidden');
+        }
+
+        function renderOrderHistory() {
+            const c = document.getElementById('dashboard-dynamic-content');
+            c.classList.remove('hidden');
+            
+            if(orders.length === 0) { 
+                c.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs">Belum ada transaksi aktif. Silakan berbelanja di Toko.</div>`; 
+                return; 
+            }
+            
+            c.innerHTML = `<div class="space-y-4">` + orders.map(o => `
+                <div class="border dark:border-gray-700 rounded-2xl p-4 text-sm bg-white dark:bg-dark-card shadow-sm">
+                    <div class="flex justify-between border-b dark:border-gray-700 pb-2 mb-3">
+                        <span class="font-bold text-tani-dark dark:text-tani-green">${o.id}</span>
+                        <span class="bg-yellow-100 text-yellow-800 text-[10px] font-bold px-2 py-1 rounded-md">${o.status}</span>
+                    </div>
+                    <div class="space-y-1 mb-3">
+                        ${o.items.map(i => `<div class="flex justify-between text-gray-600 dark:text-gray-300 text-xs"><span>${i.name} (x${i.qty})</span><span>${formatRp(i.price * i.qty)}</span></div>`).join('')}
+                    </div>
+                    <div class="flex justify-between font-bold pt-2 border-t dark:border-gray-700 dark:text-white">
+                        <span>Total Tagihan</span>
+                        <span class="text-tani-gold">${formatRp(o.total)}</span>
+                    </div>
+                </div>
+            `).join('') + `</div>`;
+        }
+
+        // Keuangan & Kalkulator
+        function renderKeuangan() {
+            const c = document.getElementById('kas-history-container');
+            let totalIn = 0, totalOut = 0;
+
+            if (kasTransactions.length === 0) {
+                c.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs">Belum ada catatan keuangan.</div>`;
+            } else {
+                c.innerHTML = kasTransactions.map((trx, idx) => {
+                    if (trx.type === 'in') totalIn += trx.amount;
+                    else totalOut += trx.amount;
+
+                    const isMasuk = trx.type === 'in';
+                    return `
+                    <div class="bg-white dark:bg-dark-card rounded-2xl p-4 flex justify-between items-center shadow-sm border border-gray-50 dark:border-gray-800">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center ${isMasuk ? 'bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400' : 'bg-red-50 text-red-500 dark:bg-red-900/20 dark:text-red-400'}">
+                                <i class="fas ${isMasuk ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold text-xs dark:text-white">${trx.desc}</p>
+                                <p class="text-[9px] text-gray-400">${trx.date}</p>
+                            </div>
+                        </div>
+                        <div class="text-right flex items-center gap-3">
+                            <p class="font-bold text-sm ${isMasuk ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}">${isMasuk ? '+' : '-'}${formatRp(trx.amount)}</p>
+                            <button onclick="hapusKas(${idx})" class="text-gray-300 hover:text-red-500"><i class="fas fa-trash-alt text-xs"></i></button>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            document.getElementById('kas-total-in').textContent = formatRp(totalIn);
+            document.getElementById('kas-total-out').textContent = formatRp(totalOut);
+            document.getElementById('kas-saldo-total').textContent = formatRp(totalIn - totalOut);
+        }
+
+        function setKasType(type) {
+            document.getElementById('kas-type').value = type;
+            const btnIn = document.getElementById('btn-kas-in');
+            const btnOut = document.getElementById('btn-kas-out');
+            
+            if(type === 'in') {
+                btnIn.className = "kas-type-btn bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 font-bold py-2 rounded-xl text-xs border-2 border-green-500";
+                btnOut.className = "kas-type-btn bg-gray-50 text-gray-500 dark:bg-gray-800 dark:text-gray-400 font-bold py-2 rounded-xl text-xs border-2 border-transparent";
+            } else {
+                btnOut.className = "kas-type-btn bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 font-bold py-2 rounded-xl text-xs border-2 border-red-500";
+                btnIn.className = "kas-type-btn bg-gray-50 text-gray-500 dark:bg-gray-800 dark:text-gray-400 font-bold py-2 rounded-xl text-xs border-2 border-transparent";
+            }
+        }
+
+        function handleTambahKas(e) {
+            e.preventDefault();
+            const desc = document.getElementById('kas-desc').value;
+            const amount = parseFloat(document.getElementById('kas-amount').value);
+            const type = document.getElementById('kas-type').value;
+
+            kasTransactions.unshift({
+                desc, amount, type,
+                date: new Date().toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'})
+            });
+            storage.set('tb_kas_final', kasTransactions);
+            showToast("Catatan berhasil disimpan!");
+            e.target.reset();
+            renderKeuangan();
+        }
+
+        function hapusKas(idx) {
+            kasTransactions.splice(idx, 1);
+            storage.set('tb_kas_final', kasTransactions);
+            renderKeuangan();
+        }
+
+        function openCalculator() {
+            calcValue = '';
+            document.getElementById('calc-display').value = '0';
+            const modal = document.getElementById('calculator-modal');
+            modal.classList.remove('hidden');
+        }
+        function closeCalculator() {
+            document.getElementById('calculator-modal').classList.add('hidden');
+        }
+        function calcPress(val) {
+            if (val === 'Backspace') {
+                calcValue = calcValue.slice(0, -1);
+            } else {
+                calcValue += val;
+            }
+            document.getElementById('calc-display').value = calcValue || '0';
+        }
+        function calcClear() {
+            calcValue = '';
+            document.getElementById('calc-display').value = '0';
+        }
+        function calcResult() {
+            try {
+                const result = eval(calcValue); 
+                calcValue = String(result);
+                document.getElementById('calc-display').value = result % 1 !== 0 ? result.toFixed(2) : result;
+            } catch (e) {
+                document.getElementById('calc-display').value = 'Error';
+                calcValue = '';
+            }
+        }
+
+        // Zakat Pertanian Syariah
+        function initZakat() {
+            const inputBerat = document.getElementById('zakat-berat');
+            const inputHarga = document.getElementById('zakat-harga');
+            const inputBiaya = document.getElementById('zakat-biaya');
+            if (inputBerat) inputBerat.value = '';
+            if (inputHarga) inputHarga.value = '';
+            if (inputBiaya) inputBiaya.value = '';
+            
+            const resultBox = document.getElementById('zakat-result-box');
+            if (resultBox) resultBox.classList.add('hidden');
+        }
+
+        function hitungZakatTani() {
+            const berat = parseFloat(document.getElementById('zakat-berat').value) || 0;
+            const harga = parseFloat(document.getElementById('zakat-harga').value) || 0;
+            const pengairan = document.getElementById('zakat-pengairan').value;
+            const biaya = parseFloat(document.getElementById('zakat-biaya').value) || 0;
+
+            if (berat <= 0) {
+                return showToast("Masukkan berat hasil panen", "error");
+            }
+            if (harga <= 0) {
+                return showToast("Masukkan estimasi harga jual", "error");
+            }
+
+            const totalHasilVal = berat * harga;
+            const nisabLimit = 653; // Nisab Padi / Gabah Kering adalah 5 Wasq ~ 653 kg
+            
+            const isNisab = berat >= nisabLimit;
+            
+            // Tentukan kadar zakat (10% jika tadah hujan/sungai, 5% jika pompa/siram manual/berbayar)
+            const kadarZakat = (pengairan === 'alami') ? 0.10 : 0.05;
+            
+            // Hitung Zakat
+            // Pilihan cara perhitungan zakat: dari hasil panen kotor (bruto) atau bersih setelah dikurangi biaya operasional (netto)
+            const hasilKenaZakat = Math.max(0, berat);
+            const zakatKg = isNisab ? (hasilKenaZakat * kadarZakat) : 0;
+            const zakatRp = isNisab ? (zakatKg * harga) : 0;
+
+            document.getElementById('zakat-result-box').classList.remove('hidden');
+            
+            const titleEl = document.getElementById('zakat-res-title');
+            const nisabStatusEl = document.getElementById('zakat-res-nisab-status');
+            const rincianEl = document.getElementById('zakat-res-rincian');
+            const totalZakatEl = document.getElementById('zakat-res-total');
+            const totalZakatRpEl = document.getElementById('zakat-res-total-rp');
+            const explanationEl = document.getElementById('zakat-res-explanation');
+
+            if (isNisab) {
+                titleEl.innerHTML = `<span class="bg-green-100 text-green-800 dark:bg-green-950/50 dark:text-green-300 text-xs font-bold px-3 py-1.5 rounded-full inline-block mb-3"><i class="fas fa-check-circle mr-1"></i> Wajib Zakat</span>`;
+                nisabStatusEl.innerHTML = `<p class="text-xs font-bold text-gray-800 dark:text-white leading-snug">Hasil panen Anda (${berat.toLocaleString('id-ID')} kg) telah <b>mencapai Nisab</b> batas wajib zakat pertanian (653 kg).</p>`;
+                
+                let detailsHtml = `
+                    <div class="flex justify-between py-2 border-b dark:border-gray-800">
+                        <span class="text-gray-500 dark:text-gray-400">Total Nilai Panen</span>
+                        <span class="font-bold text-gray-800 dark:text-white">${formatRp(totalHasilVal)}</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b dark:border-gray-800">
+                        <span class="text-gray-500 dark:text-gray-400">Sumber Air / Pengairan</span>
+                        <span class="font-semibold text-gray-800 dark:text-white">${pengairan === 'alami' ? 'Alami / Tadah Hujan' : 'Buatan / Pompa / Air Beli'}</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b dark:border-gray-800">
+                        <span class="text-gray-500 dark:text-gray-400">Kadar Zakat</span>
+                        <span class="font-bold text-tani-green">${kadarZakat * 100}%</span>
+                    </div>
+                `;
+                
+                if (biaya > 0) {
+                    const nettoRp = totalHasilVal - biaya;
+                    detailsHtml += `
+                        <div class="flex justify-between py-2 border-b dark:border-gray-800">
+                            <span class="text-gray-500 dark:text-gray-400">Biaya Operasional</span>
+                            <span class="font-semibold text-red-500">-${formatRp(biaya)}</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b dark:border-gray-800">
+                            <span class="text-gray-500 dark:text-gray-400">Hasil Bersih (Netto)</span>
+                            <span class="font-bold text-gray-800 dark:text-white">${formatRp(nettoRp)}</span>
+                        </div>
+                    `;
+                }
+
+                rincianEl.innerHTML = detailsHtml;
+                totalZakatEl.textContent = `${zakatKg.toFixed(1)} kg`;
+                totalZakatRpEl.textContent = formatRp(zakatRp);
+                
+                explanationEl.innerHTML = `Zakat pertanian dikeluarkan setiap kali panen. Pembayaran zakat bisa disalurkan dalam bentuk hasil panen (padi/gabah/sayur) sebesar <b>${zakatKg.toFixed(1)} kg</b> atau dikonversi menjadi uang tunai sebesar <b>${formatRp(zakatRp)}</b> melalui menu Wakaf & Sedekah.`;
+            } else {
+                titleEl.innerHTML = `<span class="bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300 text-xs font-bold px-3 py-1.5 rounded-full inline-block mb-3"><i class="fas fa-info-circle mr-1"></i> Belum Wajib Zakat</span>`;
+                nisabStatusEl.innerHTML = `<p class="text-xs font-semibold text-gray-800 dark:text-white leading-snug">Hasil panen Anda (${berat.toLocaleString('id-ID')} kg) <b>belum mencapai Nisab</b> batas wajib zakat pertanian (653 kg).</p>`;
+                
+                rincianEl.innerHTML = `
+                    <div class="flex justify-between py-2 border-b dark:border-gray-800">
+                        <span class="text-gray-500 dark:text-gray-400">Total Nilai Panen</span>
+                        <span class="font-semibold text-gray-800 dark:text-white">${formatRp(totalHasilVal)}</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b dark:border-gray-800">
+                        <span class="text-gray-500 dark:text-gray-400">Kekurangan Nisab</span>
+                        <span class="font-semibold text-amber-600">${(nisabLimit - berat).toLocaleString('id-ID')} kg lagi</span>
+                    </div>
+                `;
+                totalZakatEl.textContent = `0 kg`;
+                totalZakatRpEl.textContent = `Rp 0`;
+                explanationEl.innerHTML = `Anda tidak memiliki kewajiban membayar zakat panen untuk periode ini. Namun, Anda sangat dianjurkan untuk menyisihkan sebagian rizki Anda dalam bentuk <b>Sedekah Sunnah</b> guna membersihkan dan mendatangkan keberkahan pada sisa hasil tani Anda.`;
+            }
+            
+            // Scroll to results box
+            setTimeout(() => {
+                const resBox = document.getElementById('zakat-result-box');
+                if (resBox) resBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
+
+        // Pembiayaan & Wakaf
+        function hitungBagiHasil() {
+            const m = parseFloat(document.getElementById('sim-modal').value) || 0, n = parseFloat(document.getElementById('sim-nisbah').value) / 100 || 0, p = parseFloat(document.getElementById('sim-profit').value) / 100 || 0;
+            if(m===0) return showToast("Masukkan modal", "error");
+            document.getElementById('sim-result').classList.remove('hidden');
+            document.getElementById('hasil-hitung').textContent = formatRp(m * p * n);
+        }
+        function ajukanPembiayaan(akad) {
+            if(!currentUser) return showToast("Silakan login dulu", "error"), navigate('login');
+            showToast(`Pengajuan ${akad} sedang diproses.`);
+        }
+        function prosesDonasi(e) {
+            e.preventDefault(); const n = parseFloat(document.getElementById('donasi-nominal').value);
+            if(n < 10000) return showToast("Min. Rp 10.000", "error");
+            currentWakaf += n; document.getElementById('wakaf-terkumpul').textContent = formatRp(currentWakaf);
+            document.getElementById('wakaf-progress-fill').style.width = Math.min((currentWakaf/20000000)*100, 100) + '%';
+            showToast('Jazakumullah Khairan!'); e.target.reset();
+        }
+
+        // Edukasi Article
+        function openArticleModal(title, imgUrl, tag, content) {
+            document.getElementById('article-img').src = imgUrl;
+            document.getElementById('article-title').textContent = title;
+            document.getElementById('article-tag').textContent = tag;
+            document.getElementById('article-content').innerHTML = content;
+            const modal = document.getElementById('article-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('translate-y-full'), 10);
+        }
+        function closeArticleModal() {
+            const modal = document.getElementById('article-modal');
+            modal.classList.add('translate-y-full');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        // Chatbot AI
+        const geminiApiKey = "";
+        let chatHistory = [];
+
+        function toggleChat() { 
+            const w = document.getElementById('ai-widget'); 
+            w.classList.toggle('hidden'); 
+            if(!w.classList.contains('hidden')) document.getElementById('chat-input').focus(); 
+        }
+
+        async function fetchGeminiResponse(userText) {
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${geminiApiKey}`;
+            const sysInst = "Anda adalah Kawan Tani, asisten virtual platform Tani Barokah. Jawab pertanyaan pengguna dengan cepat, ramah, dan ringkas. Anda diizinkan untuk menjawab TOPIK APA SAJA yang ditanyakan pengguna (bebas/pengetahuan umum), tidak hanya soal pertanian.";
+            
+            const payload = {
+                contents: [...chatHistory, { role: "user", parts: [{ text: userText }] }],
+                systemInstruction: { parts: [{ text: sysInst }] },
+                tools: [{ google_search: {} }]
+            };
+
+            let retries = 0;
+            const delays = [500, 1000, 2000]; // Waktu jeda dipercepat
+            
+            while (retries < 3) {
+                try {
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) throw new Error('API Error');
+                    const data = await response.json();
+                    const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if(aiText) {
+                        chatHistory.push({ role: "user", parts: [{ text: userText }] });
+                        chatHistory.push({ role: "model", parts: [{ text: aiText }] });
+                        return aiText.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+                    }
+                    throw new Error('No text in response');
+                } catch (e) {
+                    if (retries === 2) return "Maaf, Kawan Tani sedang sibuk atau offline. Mohon ulangi beberapa saat lagi ya!";
+                    await new Promise(r => setTimeout(r, delays[retries]));
+                    retries++;
+                }
+            }
+        }
+
+        async function sendMessage() {
+            const inp = document.getElementById('chat-input'); 
+            const t = inp.value.trim(); 
+            if(!t) return;
+            
+            const chatMessages = document.getElementById('chat-messages');
+            chatMessages.innerHTML += `<div class="flex justify-end mb-4"><div class="bg-tani-light dark:bg-tani-dark text-tani-dark dark:text-white text-xs p-3 rounded-2xl rounded-tr-none max-w-[85%] shadow-sm">${t}</div></div>`;
+            inp.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            const typingId = 'typing-' + Date.now();
+            chatMessages.innerHTML += `<div id="${typingId}" class="flex gap-2 mb-4"><div class="w-8 h-8 rounded-full bg-tani-dark flex items-center justify-center text-white flex-shrink-0 text-xs"><i class="fas fa-robot"></i></div><div class="bg-white dark:bg-dark-card border border-gray-100 dark:border-gray-800 text-xs p-3 rounded-2xl rounded-tl-none shadow-sm dark:text-gray-200"><span class="animate-pulse">Sedang memikirkan jawaban...</span></div></div>`;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            const aiResp = await fetchGeminiResponse(t);
+
+            const typingEl = document.getElementById(typingId);
+            if(typingEl) typingEl.remove();
+
+            chatMessages.innerHTML += `<div class="flex gap-2 mb-4"><div class="w-8 h-8 rounded-full bg-tani-dark flex items-center justify-center text-white flex-shrink-0 text-xs"><i class="fas fa-robot"></i></div><div class="bg-white dark:bg-dark-card border border-gray-100 dark:border-gray-800 text-xs p-3 rounded-2xl rounded-tl-none shadow-sm dark:text-gray-200 leading-relaxed">${aiResp}</div></div>`;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Init
+        window.onload = () => { 
+            updateHeader(); 
+            updateBadge(); 
+            if(currentUser) {
+                navigate('home');
+            } else {
+                navigate('register'); 
+            }
+        };
+    </script>
+</body>
+</html>

@@ -60,6 +60,25 @@
             margin-right: 12px;
         }
         .dark input[type="file"]::file-selector-button { background: #22C55E; color: #14532D; }
+
+        /* Page transition slide-fade-in animation */
+        @keyframes pageFadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .page-fade-in {
+            animation: pageFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Pulsing ring animation for Alat Pintar circular button */
+        @keyframes pulse-ring {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4), 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+            70% { transform: scale(1.02); box-shadow: 0 0 0 8px rgba(34, 197, 94, 0), 0 10px 15px -3px rgba(0, 0, 0, 0.15); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0), 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        }
+        .btn-pulse {
+            animation: pulse-ring 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
     </style>
 </head>
 <body class="text-gray-800 font-sans transition-colors duration-300 dark:bg-dark-bg dark:text-gray-200 overscroll-none">
@@ -68,7 +87,7 @@
     <div id="toast-container" class="fixed top-24 right-4 z-[80] flex flex-col gap-2 pointer-events-none w-[90%] max-w-sm"></div>
 
     <!-- App Header -->
-    <header id="app-header" class="bg-bg-main dark:bg-dark-bg fixed w-full z-50 top-0 pt-4 pb-3 transition-colors duration-300 shadow-sm border-b border-gray-100 dark:border-gray-800">
+    <header id="app-header" class="backdrop-blur-md bg-white/75 dark:bg-dark-bg/75 fixed w-full z-50 top-0 pt-4 pb-3 transition-colors duration-300 shadow-sm border-b border-gray-100/50 dark:border-gray-800/50">
         <div class="max-w-md mx-auto px-5 flex justify-between items-center">
             <div id="header-user-info" class="transition-opacity cursor-pointer flex items-center gap-3" onclick="navigate('home')">
                 <div class="w-10 h-10 bg-gradient-to-br from-tani-dark to-tani-green rounded-xl flex items-center justify-center text-white shadow-md">
@@ -99,27 +118,27 @@
     </main>
 
     <!-- Bottom Navigation -->
-    <div id="bottom-nav" class="fixed bottom-0 left-0 w-full bg-white dark:bg-dark-card border-t border-gray-100 dark:border-gray-800 z-40 pb-safe rounded-t-3xl shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)]">
-        <div class="max-w-md mx-auto flex justify-between items-center h-20 px-6">
-            <button onclick="navigate('home')" id="nav-btn-home" class="flex flex-col items-center justify-center w-12 text-gray-400 transition-colors">
+    <div id="bottom-nav" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-[92%] max-w-[416px] bg-white/90 dark:bg-dark-card/90 backdrop-blur-md border border-gray-100/50 dark:border-gray-800/50 z-40 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.08)]">
+        <div class="flex justify-between items-center h-20 px-6">
+            <button onclick="navigate('home')" id="nav-btn-home" class="flex flex-col items-center justify-center w-12 text-gray-400 transition-colors hover:text-tani-dark dark:hover:text-tani-green">
                 <i class="fas fa-home text-xl mb-1.5"></i><span class="text-[9px]">Beranda</span>
             </button>
-            <button onclick="navigate('marketplace')" id="nav-btn-marketplace" class="flex flex-col items-center justify-center w-12 text-gray-400 transition-colors">
+            <button onclick="navigate('marketplace')" id="nav-btn-marketplace" class="flex flex-col items-center justify-center w-12 text-gray-400 transition-colors hover:text-tani-dark dark:hover:text-tani-green">
                 <i class="fas fa-store text-xl mb-1.5"></i><span class="text-[9px]">Pasar</span>
             </button>
             
             <!-- Tombol Alat Pintar -->
             <div class="relative -top-5">
-                <button onclick="navigate('smartfarm')" id="nav-btn-smartfarm" class="w-14 h-14 bg-gradient-to-r from-tani-dark to-tani-green rounded-full flex items-center justify-center text-white shadow-lg shadow-green-900/40 border-4 border-bg-main dark:border-dark-bg transform transition-transform hover:scale-105 active:scale-95">
+                <button onclick="navigate('smartfarm')" id="nav-btn-smartfarm" class="w-14 h-14 bg-gradient-to-r from-tani-dark to-tani-green rounded-full flex items-center justify-center text-white shadow-lg shadow-green-900/40 border-4 border-white dark:border-dark-card transform transition-transform hover:scale-105 active:scale-95 btn-pulse">
                     <i class="fas fa-microchip text-2xl"></i>
                 </button>
                 <span class="text-[9px] text-tani-dark dark:text-tani-green font-bold absolute -bottom-4 w-full text-center left-0">Alat Pintar</span>
             </div>
 
-            <button onclick="navigateDashboard()" id="nav-btn-dashboard" class="flex flex-col items-center justify-center w-12 text-gray-400 transition-colors">
+            <button onclick="navigateDashboard()" id="nav-btn-dashboard" class="flex flex-col items-center justify-center w-12 text-gray-400 transition-colors hover:text-tani-dark dark:hover:text-tani-green">
                 <i class="fas fa-receipt text-xl mb-1.5"></i><span class="text-[9px]">Transaksi</span>
             </button>
-            <button onclick="navigateAkun()" id="nav-btn-akun" class="flex flex-col items-center justify-center w-12 text-gray-400 transition-colors">
+            <button onclick="navigateAkun()" id="nav-btn-akun" class="flex flex-col items-center justify-center w-12 text-gray-400 transition-colors hover:text-tani-dark dark:hover:text-tani-green">
                 <i id="nav-icon-akun" class="far fa-user text-xl mb-1.5"></i><span id="nav-text-akun" class="text-[9px]">Akun</span>
             </button>
         </div>
@@ -670,29 +689,36 @@
     <!-- 8. TEMPLATE: AUTHENTICATION (DAFTAR / MASUK) -->
     <template id="tpl-auth">
         <div class="px-5 flex flex-col items-center justify-center min-h-[75vh]">
-            <div class="w-24 h-24 bg-gradient-to-br from-tani-dark to-tani-green rounded-3xl flex items-center justify-center mb-6 shadow-lg shadow-green-900/30">
-                <i class="fas fa-seedling text-white text-5xl"></i>
+            <div class="w-20 h-20 bg-gradient-to-br from-tani-dark to-tani-green rounded-3xl flex items-center justify-center mb-5 shadow-lg shadow-green-900/30">
+                <i class="fas fa-seedling text-white text-4xl"></i>
             </div>
             
-            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-2" id="auth-title">Tani Barokah</h2>
-            <p class="text-xs text-gray-500 mb-8 text-center" id="auth-subtitle">Masuk untuk mulai panen berkah</p>
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-1.5" id="auth-title">Tani Barokah</h2>
+            <p class="text-xs text-gray-500 mb-6 text-center" id="auth-subtitle">Masuk untuk mulai panen berkah</p>
             
             <form onsubmit="handleAuth(event)" class="w-full bg-white dark:bg-dark-card p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800">
+                <!-- Sliding Tab Switcher -->
+                <div class="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-2xl w-full mb-6 max-w-[280px] mx-auto border border-gray-200/30 dark:border-gray-700/30">
+                    <button type="button" onclick="setAuthMode('login')" id="auth-tab-login" class="flex-1 py-2 text-xs font-bold rounded-xl transition-all duration-300 bg-white dark:bg-dark-card text-tani-dark dark:text-tani-green shadow-sm">Masuk</button>
+                    <button type="button" onclick="setAuthMode('register')" id="auth-tab-register" class="flex-1 py-2 text-xs font-medium rounded-xl transition-all duration-300 text-gray-400 dark:text-gray-500">Daftar</button>
+                </div>
+
                 <div id="register-fields" class="space-y-4 mb-4">
                     <div class="relative">
                         <i class="far fa-user absolute left-4 top-[15px] text-gray-400"></i>
-                        <input type="text" id="auth-name" placeholder="Nama Lengkap" class="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-gray-900 rounded-xl text-sm border border-transparent focus:border-tani-dark focus:outline-none dark:text-white transition-colors">
+                        <input type="text" id="auth-name" placeholder="Nama Lengkap" class="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-gray-900 rounded-xl text-sm border border-gray-100 dark:border-gray-800 focus:border-tani-green focus:ring-2 focus:ring-tani-green/20 focus:outline-none dark:text-white transition-all duration-300">
                     </div>
                 </div>
                 
                 <div class="space-y-4">
                     <div class="relative">
                         <i class="far fa-envelope absolute left-4 top-[15px] text-gray-400"></i>
-                        <input type="email" id="auth-email" placeholder="Alamat Email Pribadi" required class="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-gray-900 rounded-xl text-sm border border-transparent focus:border-tani-dark focus:outline-none dark:text-white transition-colors">
+                        <input type="email" id="auth-email" placeholder="Alamat Email Pribadi" required class="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-gray-900 rounded-xl text-sm border border-gray-100 dark:border-gray-800 focus:border-tani-green focus:ring-2 focus:ring-tani-green/20 focus:outline-none dark:text-white transition-all duration-300">
                     </div>
                     <div class="relative">
                         <i class="fas fa-lock absolute left-4 top-[15px] text-gray-400"></i>
-                        <input type="password" id="auth-password" placeholder="Kata Sandi (Min. 6 karakter)" required minlength="6" class="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-gray-900 rounded-xl text-sm border border-transparent focus:border-tani-dark focus:outline-none dark:text-white transition-colors">
+                        <input type="password" id="auth-password" placeholder="Kata Sandi (Min. 6 karakter)" required minlength="6" class="w-full pl-11 pr-12 py-3.5 bg-gray-50 dark:bg-gray-900 rounded-xl text-sm border border-gray-100 dark:border-gray-800 focus:border-tani-green focus:ring-2 focus:ring-tani-green/20 focus:outline-none dark:text-white transition-all duration-300">
+                        <button type="button" onclick="toggleAuthPasswordVisibility()" class="absolute right-4 top-[14px] text-gray-400 hover:text-tani-dark dark:hover:text-tani-green focus:outline-none"><i class="fas fa-eye" id="auth-password-eye"></i></button>
                     </div>
                 </div>
                 
@@ -704,7 +730,7 @@
                     <div class="h-px bg-gray-200 dark:bg-gray-700 flex-1"></div>
                 </div>
                 
-                <button type="button" onclick="loginWithGoogle()" class="w-full bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 font-semibold py-3.5 rounded-xl mt-4 border border-gray-200 dark:border-gray-700 flex items-center justify-center gap-3 active:bg-gray-50 dark:active:bg-gray-700 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700">
+                <button type="button" onclick="loginWithGoogle()" class="w-full bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 font-semibold py-3.5 rounded-xl mt-4 border border-gray-200 dark:border-gray-700 flex items-center justify-center gap-3 active:bg-gray-50 dark:active:bg-gray-700 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" class="w-4 h-4" alt="Google">
                     <span id="google-btn-text">Lanjutkan dengan Google</span>
                 </button>
@@ -805,6 +831,28 @@
                 </form>
             </div>
 
+            <!-- Pengaturan AI -->
+            <div class="bg-white dark:bg-dark-card rounded-3xl p-5 shadow-sm border border-gray-100 dark:border-gray-800">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 bg-tani-light dark:bg-gray-800 rounded-xl flex items-center justify-center text-tani-dark dark:text-tani-green"><i class="fas fa-robot text-lg"></i></div>
+                    <div>
+                        <h3 class="font-bold text-sm dark:text-white">Pengaturan Kawan Tani (AI)</h3>
+                        <p class="text-[9px] text-gray-500">Hubungkan kunci AI untuk menggunakan Chatbot & Dokter Tanaman</p>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-[10px] text-gray-500 dark:text-gray-400 ml-1">Gemini API Key</label>
+                        <div class="flex gap-2">
+                            <input type="password" id="gemini-api-key-input" placeholder="Masukkan API Key (AIzaSy...)" class="flex-1 px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white">
+                            <button onclick="toggleApiKeyVisibility()" class="px-3 bg-gray-100 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs text-gray-600 dark:text-gray-400"><i class="fas fa-eye" id="toggle-key-eye"></i></button>
+                        </div>
+                        <p class="text-[8px] text-gray-400 mt-1 ml-1">Kunci disimpan aman di perangkat Anda (tidak diunggah ke server) & harus diawali dengan <b>AIzaSy</b>.</p>
+                    </div>
+                    <button onclick="saveApiKey()" class="w-full bg-tani-dark active:bg-green-800 text-white font-bold py-3 rounded-xl shadow-md text-xs transition-colors">Simpan API Key</button>
+                </div>
+            </div>
+
             <!-- Pengaturan -->
             <div class="bg-white dark:bg-dark-card rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden p-2">
                 <div class="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-2xl transition-colors" onclick="toggleDarkMode()">
@@ -857,6 +905,8 @@
         };
 
         const defaultProducts = [
+            { id: 1, name: 'Beras Pandanwangi Cianjur', category: 'Padi', price: 17500, weight: '1 kg', rating: 4.9, farmer: 'Pak Haji Rohman', img: 'https://images.unsplash.com/photo-1515036918611-4b7f32b8406c?q=80&w=400', desc: 'Beras wangi pandan asli Cianjur kualitas premium, pulen dan harum alami.' },
+            { id: 2, name: 'Beras Merah Organik Dieng', category: 'Padi', price: 21000, weight: '1 kg', rating: 4.8, farmer: 'Mbah Darmo', img: 'https://images.unsplash.com/photo-1536304997881-db372c1a9fb7?q=80&w=400', desc: 'Beras merah organik dari Dieng, tinggi serat dan sangat baik untuk kesehatan.' },
             { id: 3, name: 'Cabai Merah Keriting', category: 'Sayuran', price: 28000, weight: '1 kg', rating: 4.7, farmer: 'Bu Yanti', img: 'https://images.unsplash.com/photo-1605807616999-bc36fb489069?q=80&w=400', desc: 'Cabai segar pedas alami baru panen.' },
             { id: 4, name: 'Tomat Segar Hidroponik', category: 'Sayuran', price: 16000, weight: '1 kg', rating: 4.9, farmer: 'Kelompok Tani', img: 'https://images.unsplash.com/photo-1561136594-7f68413baa99?q=80&w=400', desc: 'Tomat segar hidroponik bebas pestisida kimia.' },
             { id: 5, name: 'Bayam Hijau Cabut', category: 'Sayuran', price: 5000, weight: '1 ikat', rating: 4.6, farmer: 'Pak Mamat', img: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?q=80&w=400', desc: 'Bayam segar dipetik pagi hari, kaya akan zat besi.' },
@@ -868,15 +918,21 @@
             { id: 11, name: 'Kunyit Segar', category: 'Rempah', price: 18000, weight: '1 kg', rating: 4.7, farmer: 'Mbah Darmo', img: 'https://images.unsplash.com/photo-1613140837372-96cb3479a0db?q=80&w=400', desc: 'Kunyit segar kaya khasiat, cocok untuk bumbu masak atau jamu.' },
             { id: 12, name: 'Bawang Merah Brebes', category: 'Rempah', price: 42000, weight: '1 kg', rating: 4.8, farmer: 'Koperasi Maju', img: 'https://images.unsplash.com/photo-1620574387735-3624d75b2dbc?q=80&w=400', desc: 'Bawang merah super Brebes, wangi tajam dan tidak mudah busuk.' },
             { id: 13, name: 'Kentang Dieng', category: 'Sayuran', price: 20000, weight: '1 kg', rating: 4.8, farmer: 'Kelompok Tani', img: 'https://images.unsplash.com/photo-1518977956812-cd3dad34ec4d?q=80&w=400', desc: 'Kentang segar dari dataran tinggi Dieng, cocok untuk aneka masakan.' },
-            { id: 14, name: 'Bawang Putih Kating', category: 'Rempah', price: 38000, weight: '1 kg', rating: 4.9, farmer: 'Mbah Darmo', img: 'https://images.unsplash.com/photo-1589530495147-380d388e2c04?q=80&w=400', desc: 'Bawang putih kating asli, aroma lebih kuat dan sedap.' },
-            { id: 15, name: 'Jahe Merah', category: 'Rempah', price: 25000, weight: '500 gram', rating: 4.7, farmer: 'Pak Budi', img: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?q=80&w=400', desc: 'Jahe merah pilihan, berkhasiat menghangatkan tubuh dan stamina.' },
+            { id: 14, name: 'Bawang Putih Kating', category: 'Rempah', price: 38000, weight: '1 kg', rating: 4.9, farmer: 'Mbah Darmo', img: 'https://images.unsplash.com/photo-1589530495147-380d388e2c04?q=80&w=400', desc: 'Bawang putih kating asli, aroma lebih kuat and sedap.' },
+            { id: 15, name: 'Jahe Merah', category: 'Rempah', price: 25000, weight: '500 gram', rating: 4.7, farmer: 'Pak Budi', img: 'jahe_merah.png', desc: 'Jahe merah pilihan, berkhasiat menghangatkan tubuh dan stamina.' },
             { id: 16, name: 'Jeruk Medan', category: 'Buah', price: 28000, weight: '1 kg', rating: 4.8, farmer: 'Koperasi Maju', img: 'https://images.unsplash.com/photo-1549888834-3ec93abae044?q=80&w=400', desc: 'Jeruk Medan manis segar banyak air, langsung petik.' },
             { id: 17, name: 'Apel Malang', category: 'Buah', price: 30000, weight: '1 kg', rating: 4.6, farmer: 'Kebun Raya Tani', img: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6faa6?q=80&w=400', desc: 'Apel Malang hijau, renyah dan memiliki rasa manis asam yang khas.' },
             { id: 18, name: 'Kangkung Segar', category: 'Sayuran', price: 4500, weight: '1 ikat', rating: 4.9, farmer: 'Bu Yanti', img: 'https://images.unsplash.com/photo-1603048297172-c92544798d5e?q=80&w=400', desc: 'Kangkung darat hijau segar, ditanam organik.' }
         ];
         
-        let products = storage.get('tb_prod_v9', defaultProducts);
-        if(products.length < 16) { products = defaultProducts; storage.set('tb_prod_v9', products); }
+        const currentProdVersion = 'tb_prod_v14';
+        let products = storage.get(currentProdVersion, defaultProducts);
+        if (storage.get('tb_prod_version_tracker') !== currentProdVersion) {
+            products = defaultProducts;
+            storage.set(currentProdVersion, products);
+            storage.set('tb_prod_version_tracker', currentProdVersion);
+            ['tb_prod_v9', 'tb_prod_v10', 'tb_prod_v11', 'tb_prod_v12', 'tb_prod_v13'].forEach(k => localStorage.removeItem(k));
+        }
 
         let cart = storage.get('tb_cart_v4', []);
         let orders = storage.get('tb_order_v4', []); 
@@ -940,12 +996,15 @@
             }
 
             if(page === 'login' || page === 'register') {
-                isLoginMode = page === 'login'; main.innerHTML = document.getElementById('tpl-auth').innerHTML; updateAuthUI(); return;
+                isLoginMode = page === 'login'; 
+                main.innerHTML = `<div class="page-fade-in">${document.getElementById('tpl-auth').innerHTML}</div>`; 
+                updateAuthUI(); 
+                return;
             }
 
             const tpl = document.getElementById(`tpl-${page}`);
             if(tpl) {
-                main.innerHTML = tpl.innerHTML;
+                main.innerHTML = `<div class="page-fade-in">${tpl.innerHTML}</div>`;
                 if(page === 'marketplace') { currentMarketplaceCategory = 'Semua'; renderProducts(products); }
                 if(page === 'cart') renderCart();
                 if(page === 'dashboard') renderDashboardContent();
@@ -958,23 +1017,65 @@
         function navigateAkun() { !currentUser ? navigate('register') : navigate('akun'); }
 
         // Auth Logic
-        function toggleAuthMode() { isLoginMode = !isLoginMode; updateAuthUI(); }
+        // Auth Logic
+        function toggleAuthMode() {
+            setAuthMode(isLoginMode ? 'register' : 'login');
+        }
+
+        function setAuthMode(mode) {
+            isLoginMode = (mode === 'login');
+            updateAuthUI();
+        }
+
+        function toggleAuthPasswordVisibility() {
+            const input = document.getElementById('auth-password');
+            const eye = document.getElementById('auth-password-eye');
+            if (input && eye) {
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    eye.className = 'fas fa-eye-slash';
+                } else {
+                    input.type = 'password';
+                    eye.className = 'fas fa-eye';
+                }
+            }
+        }
         
         function updateAuthUI() {
-            document.getElementById('auth-title').textContent = isLoginMode ? 'Selamat Datang!' : 'Tani Barokah';
-            document.getElementById('auth-subtitle').textContent = isLoginMode ? 'Masuk untuk mengelola hasil panen Anda' : 'Daftar sekarang untuk mulai panen berkah';
-            document.getElementById('auth-submit-btn').textContent = isLoginMode ? 'Masuk Sekarang' : 'Daftar Sekarang';
-            document.getElementById('auth-switch-text').textContent = isLoginMode ? 'Belum punya akun?' : 'Sudah punya akun?';
-            document.getElementById('auth-switch-btn').textContent = isLoginMode ? 'Daftar di sini' : 'Masuk di sini';
+            const titleEl = document.getElementById('auth-title');
+            const subtitleEl = document.getElementById('auth-subtitle');
+            const submitBtn = document.getElementById('auth-submit-btn');
+            const switchText = document.getElementById('auth-switch-text');
+            const switchBtn = document.getElementById('auth-switch-btn');
+            
+            if (titleEl) titleEl.textContent = isLoginMode ? 'Selamat Datang!' : 'Tani Barokah';
+            if (subtitleEl) subtitleEl.textContent = isLoginMode ? 'Masuk untuk mengelola hasil panen Anda' : 'Daftar sekarang untuk mulai panen berkah';
+            if (submitBtn) submitBtn.textContent = isLoginMode ? 'Masuk Sekarang' : 'Daftar Sekarang';
+            if (switchText) switchText.textContent = isLoginMode ? 'Belum punya akun?' : 'Sudah punya akun?';
+            if (switchBtn) switchBtn.textContent = isLoginMode ? 'Daftar di sini' : 'Masuk di sini';
             
             const r = document.getElementById('register-fields');
             const nameInput = document.getElementById('auth-name');
-            if (isLoginMode) {
-                r.classList.add('hidden');
-                nameInput.required = false;
-            } else {
-                r.classList.remove('hidden');
-                nameInput.required = true;
+            if (r && nameInput) {
+                if (isLoginMode) {
+                    r.classList.add('hidden');
+                    nameInput.required = false;
+                } else {
+                    r.classList.remove('hidden');
+                    nameInput.required = true;
+                }
+            }
+
+            const tabLogin = document.getElementById('auth-tab-login');
+            const tabRegister = document.getElementById('auth-tab-register');
+            if (tabLogin && tabRegister) {
+                if (isLoginMode) {
+                    tabLogin.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all duration-300 bg-white dark:bg-dark-card text-tani-dark dark:text-tani-green shadow-sm";
+                    tabRegister.className = "flex-1 py-2 text-xs font-medium rounded-xl transition-all duration-300 text-gray-400 dark:text-gray-500";
+                } else {
+                    tabLogin.className = "flex-1 py-2 text-xs font-medium rounded-xl transition-all duration-300 text-gray-400 dark:text-gray-500";
+                    tabRegister.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all duration-300 bg-white dark:bg-dark-card text-tani-dark dark:text-tani-green shadow-sm";
+                }
             }
         }
         
@@ -1050,6 +1151,10 @@
             document.getElementById('edit-name').value = currentUser.name;
             document.getElementById('edit-phone').value = currentUser.phone || '';
             document.getElementById('edit-address').value = currentUser.address || '';
+            
+            const savedKey = localStorage.getItem('gemini_api_key') || '';
+            const keyInput = document.getElementById('gemini-api-key-input');
+            if (keyInput) keyInput.value = savedKey;
         }
         function saveProfile(e) {
             e.preventDefault();
@@ -1058,6 +1163,40 @@
             currentUser.address = document.getElementById('edit-address').value;
             storage.set('tb_user_final', currentUser);
             showToast("Profil berhasil diperbarui!"); updateHeader(); renderAkun(); 
+        }
+
+        function toggleApiKeyVisibility() {
+            const input = document.getElementById('gemini-api-key-input');
+            const eye = document.getElementById('toggle-key-eye');
+            if (input && eye) {
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    eye.className = 'fas fa-eye-slash';
+                } else {
+                    input.type = 'password';
+                    eye.className = 'fas fa-eye';
+                }
+            }
+        }
+
+        function saveApiKey() {
+            const input = document.getElementById('gemini-api-key-input');
+            if (input) {
+                const val = input.value.trim();
+                if (val === '') {
+                    localStorage.removeItem('gemini_api_key');
+                    showToast('API Key telah dihapus!', 'info');
+                    renderAkun();
+                    return;
+                }
+                if (!val.startsWith('AIzaSy')) {
+                    showToast('Format API Key salah! Harus diawali dengan AIzaSy...', 'error');
+                    return;
+                }
+                localStorage.setItem('gemini_api_key', val);
+                showToast('API Key berhasil disimpan!', 'success');
+                renderAkun();
+            }
         }
 
         // Marketplace Logic
@@ -1340,9 +1479,35 @@
             const modal = document.getElementById('article-modal'); modal.classList.add('translate-y-full'); setTimeout(() => modal.classList.add('hidden'), 300);
         }
 
-        // --- SISTEM PENGHUBUNG GOOGLE GEMINI AI (OTOMATIS AKTIF) ---
-        const apiKey = ""; 
+        // --- SISTEM PENGHUBUNG GOOGLE GEMINI AI ---
+        function getApiKey() {
+            return localStorage.getItem('gemini_api_key') || "";
+        }
         let chatHistory = []; 
+
+        // Mock AI Responses for Demo Mode
+        function getMockChatResponse(userText) {
+            const t = userText.toLowerCase();
+            if (t.includes("halo") || t.includes("hai") || t.includes("assalamu")) {
+                return "Wa'alaikumussalam! Halo Sahabat Tani. Ada yang bisa Kawan Tani bantu hari ini? 🌾 (Catatan: Saat ini Kawan Tani berjalan dalam <b>Mode Demo AI</b>. Hubungkan Gemini API Key di menu Akun untuk mengaktifkan AI asli).";
+            } else if (t.includes("zakat")) {
+                return "Zakat pertanian wajib dikeluarkan saat panen jika mencapai Nisab 653 kg gabah. Tarifnya 10% jika dialiri air tadah hujan/sungai gratis, atau 5% jika menggunakan pengairan berbayar (seperti pompa diesel).";
+            } else if (t.includes("modal") || t.includes("pembiayaan") || t.includes("investasi")) {
+                return "Tani Barokah menyediakan pembiayaan berbasis syariah seperti akad Mudharabah (bagi hasil 100% modal dari pemodal) dan Musyarakah (kongsi modal bersama). Anda bisa mengajukannya di menu Modal Tani.";
+            } else if (t.includes("harga") || t.includes("pasar")) {
+                return "Pantauan harga pasar hari ini: Beras Medium Rp12.500/kg (naik 2.4%), Cabai Merah Rp28.000/kg (turun 5.1%), dan Bawang Merah Rp40.000/kg (stabil).";
+            } else {
+                return `Pertanyaan yang sangat bagus mengenai "${userText}"! Di platform Tani Barokah, kami berdedikasi membangun ekosistem tani berbasis syariah yang modern. <br><br>💡 <i>Tip: Hubungkan Gemini API Key Anda di menu Akun untuk mendapatkan jawaban kecerdasan buatan (Gemini 2.5) secara penuh dan interaktif!</i>`;
+            }
+        }
+
+        function getMockVisionResponse() {
+            return `<p class="font-bold text-green-600 dark:text-green-400 mb-2"><i class="fas fa-check-circle"></i> Hasil Analisis Dokter Tanaman (Mode Demo):</p>
+            <b>1. Identitas Tanaman:</b> Daun Padi (Oryza sativa)<br>
+            <b>2. Diagnosis Penyakit:</b> Terindikasi terkena penyakit Blas Daun (Pyricularia oryzae) tingkat awal.<br>
+            <b>3. Solusi Organik:</b> Semprotkan ekstrak daun nimba secara berkala, kurangi pemakaian pupuk Nitrogen berlebih, dan pastikan sirkulasi air sawah lancar.<br><br>
+            ⚠️ <i>Catatan: Ini adalah hasil simulasi/demo. Pasang API Key di menu Akun untuk menganalisis gambar asli menggunakan AI Dokter Tanaman.</i>`;
+        }
 
         // --- SMART FARMING: AI VISION (DOKTER TANAMAN) ---
         function handleImageUpload(event) {
@@ -1372,7 +1537,21 @@
             btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Menganalisis...`;
             btn.disabled = true;
 
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const currentKey = getApiKey();
+            if (!currentKey || !currentKey.startsWith('AIzaSy')) {
+                // Jalankan Mode Demo / Simulasi AI
+                setTimeout(() => {
+                    const resDiv = document.getElementById('ai-vision-result');
+                    resDiv.innerHTML = getMockVisionResponse();
+                    resDiv.classList.remove('hidden');
+                    btn.innerHTML = `Analisis Penyakit Tanaman`;
+                    btn.disabled = false;
+                    showToast('Analisis selesai (Mode Demo)', 'info');
+                }, 1500);
+                return;
+            }
+
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${currentKey}`;
             const prompt = "Anda adalah Ahli Botani dan Penyakit Tanaman. Analisis gambar daun/tanaman ini. 1) Sebutkan identitas tanaman. 2) Diagnosis penyakit atau hamanya. 3) Berikan solusi organik yang mudah.";
 
             const payload = {
@@ -1404,7 +1583,7 @@
                 }
             } catch (e) {
                 const resDiv = document.getElementById('ai-vision-result');
-                resDiv.innerHTML = `<span class="text-red-500 font-bold">Koneksi Gagal:</span> Gagal terhubung ke AI.`;
+                resDiv.innerHTML = `<span class="text-red-500 font-bold">Koneksi Gagal:</span> Gagal terhubung ke AI. Pastikan API Key Anda valid.`;
                 resDiv.classList.remove('hidden');
             } finally {
                 btn.innerHTML = `Analisis Penyakit Tanaman`;
@@ -1419,7 +1598,13 @@
         }
 
         async function fetchGeminiResponse(userText) {
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const currentKey = getApiKey();
+            if (!currentKey || !currentKey.startsWith('AIzaSy')) {
+                // Return mock response after a short delay to simulate network call
+                await new Promise(r => setTimeout(r, 800));
+                return getMockChatResponse(userText);
+            }
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${currentKey}`;
             const sysInst = "Anda adalah Kawan Tani, asisten virtual cerdas platform Tani Barokah. Jawab pertanyaan pengguna dengan ramah, dan ringkas. Anda diizinkan untuk menjawab TOPIK APA SAJA yang ditanyakan pengguna (bebas/pengetahuan umum), tidak hanya soal pertanian.";
             
             const payload = {
@@ -1441,7 +1626,7 @@
                     }
                     throw new Error('No text in response');
                 } catch (e) {
-                    if (retries === 2) return "Maaf, Kawan Tani sedang sibuk atau offline. Mohon ulangi beberapa saat lagi ya!";
+                    if (retries === 2) return "Maaf, Kawan Tani sedang sibuk atau gagal terhubung. Silakan periksa kembali apakah API Key yang Anda masukkan di menu Akun sudah benar.";
                     await new Promise(r => setTimeout(r, delays[retries])); retries++;
                 }
             }

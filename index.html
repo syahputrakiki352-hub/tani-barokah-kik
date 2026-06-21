@@ -286,6 +286,201 @@
         </div>
     </div>
 
+    <!-- Modal Top Up Saldo -->
+    <div id="topup-modal" class="hidden fixed inset-0 z-[80] bg-black/60 flex items-center justify-center backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-dark-card w-[90%] max-w-sm rounded-3xl shadow-2xl overflow-hidden">
+            <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50 dark:bg-gray-900">
+                <h3 class="font-bold text-gray-800 dark:text-white">Top Up Saldo</h3>
+                <button onclick="closeTopUpModal()" class="text-gray-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <form onsubmit="handleTopUp(event)" class="p-5 space-y-4">
+                <div>
+                    <label class="text-[10px] text-gray-500 ml-1">Pilih Nominal Cepat</label>
+                    <div class="grid grid-cols-2 gap-2 mt-1.5">
+                        <button type="button" onclick="setTopUpAmount(50000)" class="quick-topup-btn bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 py-2.5 rounded-xl text-xs font-bold dark:text-white hover:border-tani-dark dark:hover:border-tani-green transition-colors">Rp 50.000</button>
+                        <button type="button" onclick="setTopUpAmount(100000)" class="quick-topup-btn bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 py-2.5 rounded-xl text-xs font-bold dark:text-white hover:border-tani-dark dark:hover:border-tani-green transition-colors">Rp 100.000</button>
+                        <button type="button" onclick="setTopUpAmount(200000)" class="quick-topup-btn bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 py-2.5 rounded-xl text-xs font-bold dark:text-white hover:border-tani-dark dark:hover:border-tani-green transition-colors">Rp 200.000</button>
+                        <button type="button" onclick="setTopUpAmount(500000)" class="quick-topup-btn bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 py-2.5 rounded-xl text-xs font-bold dark:text-white hover:border-tani-dark dark:hover:border-tani-green transition-colors">Rp 500.000</button>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] text-gray-500 ml-1">Nominal Custom (Rp)</label>
+                    <input type="number" id="topup-amount" required placeholder="Minimal Rp 10.000" min="10000" class="w-full px-4 py-3 mt-1.5 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white">
+                </div>
+                <div>
+                    <label class="text-[10px] text-gray-500 ml-1">Metode Pembayaran</label>
+                    <select id="topup-method" required onchange="updateTopUpInstructions(this.value)" class="w-full px-4 py-3 mt-1.5 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white bg-white">
+                        <option value="Bank Syariah">Transfer Bank Syariah (Simulasi BSI)</option>
+                        <option value="Qris">QRIS (Panen Berkah)</option>
+                        <option value="GoPay">GoPay (Instan)</option>
+                    </select>
+                </div>
+                <!-- Dynamic payment instructions -->
+                <div id="topup-instructions-container" class="bg-gray-50 dark:bg-gray-900 p-3.5 rounded-2xl border border-gray-150 dark:border-gray-800 text-[10px] text-gray-500 dark:text-gray-400 space-y-1">
+                    <!-- Loaded dynamically via updateTopUpInstructions -->
+                </div>
+                <button type="submit" class="w-full bg-tani-dark text-white font-bold py-3.5 rounded-xl shadow-md text-xs transition-transform active:scale-95">Konfirmasi Top Up</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Transfer Saldo -->
+    <div id="transfer-modal" class="hidden fixed inset-0 z-[80] bg-black/60 flex items-center justify-center backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-dark-card w-[90%] max-w-sm rounded-3xl shadow-2xl overflow-hidden">
+            <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50 dark:bg-gray-900">
+                <h3 class="font-bold text-gray-800 dark:text-white">Transfer Saldo</h3>
+                <button onclick="closeTransferModal()" class="text-gray-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <form onsubmit="handleTransfer(event)" class="p-5 space-y-4">
+                <div>
+                    <label class="text-[10px] text-gray-500 ml-1">Tipe Transfer</label>
+                    <select id="transfer-type" required onchange="toggleTransferType(this.value)" class="w-full px-4 py-3 mt-1.5 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white bg-white">
+                        <option value="wallet">Sesama Dompet Barokah</option>
+                        <option value="bank">Ke Rekening Bank</option>
+                        <option value="ewallet">Ke E-Wallet (DANA/OVO/GoPay/dll)</option>
+                    </select>
+                </div>
+                <div id="transfer-wallet-fields">
+                    <label class="text-[10px] text-gray-500 ml-1">Email / WhatsApp Penerima</label>
+                    <input type="text" id="transfer-recipient" required placeholder="Contoh: penerima@gmail.com atau 0812..." class="w-full px-4 py-3 mt-1.5 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white">
+                </div>
+                <div id="transfer-bank-fields" class="space-y-4 hidden">
+                    <div>
+                        <label class="text-[10px] text-gray-500 ml-1">Pilih Bank Tujuan</label>
+                        <select id="transfer-bank-name" class="w-full px-4 py-3 mt-1.5 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white bg-white">
+                            <option value="BSI">Bank Syariah Indonesia (BSI)</option>
+                            <option value="Muamalat">Bank Muamalat</option>
+                            <option value="BCA">Bank BCA</option>
+                            <option value="Mandiri">Bank Mandiri</option>
+                            <option value="BRI">Bank BRI</option>
+                            <option value="BNI">Bank BNI</option>
+                            <option value="CIMB Niaga">Bank CIMB Niaga</option>
+                            <option value="Permata">Bank Permata</option>
+                            <option value="BTPN">Bank BTPN / Jenius</option>
+                            <option value="BPD">Bank Pembangunan Daerah (BPD)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-gray-500 ml-1">Nomor Rekening Penerima</label>
+                        <input type="number" id="transfer-bank-acc" placeholder="Masukkan nomor rekening" class="w-full px-4 py-3 mt-1.5 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white">
+                    </div>
+                </div>
+                <div id="transfer-ewallet-fields" class="space-y-4 hidden">
+                    <div>
+                        <label class="text-[10px] text-gray-500 ml-1">Pilih E-Wallet Tujuan</label>
+                        <select id="transfer-ewallet-name" class="w-full px-4 py-3 mt-1.5 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white bg-white">
+                            <option value="GoPay">GoPay</option>
+                            <option value="DANA">DANA</option>
+                            <option value="OVO">OVO</option>
+                            <option value="LinkAja">LinkAja</option>
+                            <option value="ShopeePay">ShopeePay</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-gray-500 ml-1">No. HP / ID E-Wallet Penerima</label>
+                        <input type="text" id="transfer-ewallet-id" placeholder="Contoh: 08123456789" class="w-full px-4 py-3 mt-1.5 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] text-gray-500 ml-1">Nominal Transfer (Rp)</label>
+                    <input type="number" id="transfer-amount" required placeholder="Minimal Rp 1.000" min="1000" class="w-full px-4 py-3 mt-1.5 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white">
+                </div>
+                <div>
+                    <label class="text-[10px] text-gray-500 ml-1">Catatan / Keterangan</label>
+                    <input type="text" id="transfer-note" placeholder="Cth: Uang beli benih jagung" class="w-full px-4 py-3 mt-1.5 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white">
+                </div>
+                <button type="submit" class="w-full bg-tani-dark text-white font-bold py-3.5 rounded-xl shadow-md text-xs transition-transform active:scale-95">Kirim Transfer</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Cetak Laporan Keuangan -->
+    <div id="print-modal" class="hidden fixed inset-0 z-[90] bg-black/60 flex items-center justify-center backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-dark-card w-[95%] max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+            <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50 dark:bg-gray-900">
+                <h3 class="font-bold text-gray-800 dark:text-white">Pratinjau Cetak Laporan</h3>
+                <button onclick="closePrintModal()" class="text-gray-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <!-- Bagian yang akan dicetak -->
+            <div id="print-area" class="p-8 overflow-y-auto flex-1 bg-white text-gray-800 text-left leading-relaxed">
+                <style>
+                    @media print {
+                        body * { visibility: hidden; }
+                        #print-area, #print-area * { visibility: visible; }
+                        #print-area { position: absolute; left: 0; top: 0; width: 100%; padding: 0; margin: 0; }
+                    }
+                </style>
+                <div class="text-center border-b-2 border-tani-dark pb-4 mb-6">
+                    <h2 class="text-xl font-bold text-tani-dark uppercase tracking-wide">Tani Barokah</h2>
+                    <p class="text-xs text-gray-500">Platform Pertanian Syariah & Buku Keuangan Terpadu</p>
+                    <p class="text-[10px] text-gray-400 mt-1" id="print-meta-date">Dicetak pada: -</p>
+                </div>
+                <div class="mb-4">
+                    <h3 class="text-sm font-bold text-center uppercase tracking-wide text-gray-700 bg-gray-100 py-1.5 rounded">Laporan Keuangan Buku Kas</h3>
+                    <div class="grid grid-cols-2 text-xs mt-3 text-gray-600 gap-y-1">
+                        <div>Nama Pengguna: <span class="font-semibold text-gray-800" id="print-user-name">-</span></div>
+                        <div class="text-right">Periode: <span class="font-semibold text-gray-800" id="print-periode">-</span></div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-3 my-5 text-center">
+                    <div class="border border-green-200 bg-green-50/50 p-2.5 rounded-xl">
+                        <span class="text-[9px] text-gray-500 block uppercase font-semibold">Total Pemasukan</span>
+                        <span id="print-total-in" class="text-sm font-extrabold text-green-700">-</span>
+                    </div>
+                    <div class="border border-red-200 bg-red-50/50 p-2.5 rounded-xl">
+                        <span class="text-[9px] text-gray-500 block uppercase font-semibold">Total Pengeluaran</span>
+                        <span id="print-total-out" class="text-sm font-extrabold text-red-700">-</span>
+                    </div>
+                    <div class="border border-blue-200 bg-blue-50/50 p-2.5 rounded-xl" id="print-profit-box">
+                        <span class="text-[9px] text-gray-500 block uppercase font-semibold" id="print-profit-label">Laba Bersih</span>
+                        <span id="print-total-profit" class="text-sm font-extrabold text-blue-700">-</span>
+                    </div>
+                </div>
+                <!-- Rincian Berdasarkan Akun Kategori (Cetak) -->
+                <div class="mb-5">
+                    <h4 class="text-[10px] font-bold text-gray-700 bg-gray-50 py-1 px-2 rounded mb-2 uppercase tracking-wider">Rincian Berdasarkan Pos Akun</h4>
+                    <div id="print-account-breakdown" class="grid grid-cols-2 gap-x-4 gap-y-1 text-[10px] text-gray-600 px-2 mb-2">
+                        <!-- Injected by JS -->
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <table class="w-full text-xs text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-700 uppercase text-[9px] tracking-wider border-b border-gray-200">
+                                <th class="py-2.5 px-2">Tanggal</th>
+                                <th class="py-2.5 px-2">Keterangan</th>
+                                <th class="py-2.5 px-2 text-right">Pemasukan</th>
+                                <th class="py-2.5 px-2 text-right">Pengeluaran</th>
+                            </tr>
+                        </thead>
+                        <tbody id="print-table-body" class="divide-y divide-gray-100 text-gray-700">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="flex justify-between items-center mt-12 text-xs text-gray-600">
+                    <div>
+                        <p>Disetujui Oleh,</p>
+                        <div class="h-16"></div>
+                        <p class="font-bold border-t border-gray-300 pt-1 w-32" id="print-sign-name">-</p>
+                    </div>
+                    <div class="text-right">
+                        <p>Sistem Tani Barokah,</p>
+                        <div class="h-16 flex items-center justify-end">
+                            <i class="fas fa-certificate text-tani-gold text-3xl opacity-30"></i>
+                        </div>
+                        <p class="font-bold border-t border-gray-300 pt-1 w-36 text-center">E-Verified System</p>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 flex gap-3">
+                <button onclick="doPrint()" class="flex-1 bg-tani-dark text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-md"><i class="fas fa-print"></i> Cetak / Simpan PDF</button>
+                <button onclick="closePrintModal()" class="px-5 bg-white dark:bg-dark-card border border-gray-200 dark:border-gray-700 rounded-xl text-xs text-gray-600 dark:text-gray-300 font-semibold">Tutup</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ==============================================
          HTML TEMPLATES FOR ROUTING
     =============================================== -->
@@ -635,11 +830,29 @@
             <div id="cart-items-container" class="space-y-3"></div>
             
             <div id="checkout-section" class="bg-white dark:bg-dark-card rounded-3xl p-5 shadow-sm border border-gray-100 dark:border-gray-800 mt-6 hidden">
+                <div class="space-y-3 mb-5">
+                    <label class="text-[10px] font-bold text-gray-500 block mb-1">Pilih Metode Pembayaran</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="flex flex-col items-center justify-center p-3.5 bg-gray-50 dark:bg-gray-850 border-2 border-tani-dark dark:border-tani-green rounded-2xl cursor-pointer relative" id="label-pay-cash">
+                            <input type="radio" name="pay-method" value="cash" checked onchange="togglePayMethodUI('cash')" class="absolute top-2.5 right-2.5 accent-tani-dark dark:accent-tani-green">
+                            <i class="fas fa-hand-holding-usd text-lg text-tani-dark dark:text-tani-green mb-1.5"></i>
+                            <span class="text-[10px] font-bold dark:text-white">Bayar Manual</span>
+                            <span class="text-[8px] text-gray-400 mt-0.5">Akad Murabahah</span>
+                        </label>
+                        <label class="flex flex-col items-center justify-center p-3.5 bg-gray-50 dark:bg-gray-850 border-2 border-transparent rounded-2xl cursor-pointer relative" id="label-pay-wallet">
+                            <input type="radio" name="pay-method" value="wallet" onchange="togglePayMethodUI('wallet')" class="absolute top-2.5 right-2.5 accent-tani-dark dark:accent-tani-green">
+                            <i class="fas fa-wallet text-lg text-yellow-500 mb-1.5"></i>
+                            <span class="text-[10px] font-bold dark:text-white">Dompet Barokah</span>
+                            <span id="cart-wallet-balance-info" class="text-[8px] text-gray-400 mt-0.5">Saldo: Rp 0</span>
+                        </label>
+                    </div>
+                </div>
+
                 <div class="flex justify-between items-center mb-4">
                     <span class="text-sm font-semibold dark:text-gray-300">Total Tagihan</span>
                     <span id="cart-total" class="text-lg font-bold text-tani-dark dark:text-tani-green">Rp 0</span>
                 </div>
-                <button onclick="handleCheckout(event)" class="w-full bg-tani-dark text-white font-bold py-4 rounded-2xl shadow-lg">Checkout (Akad Murabahah)</button>
+                <button onclick="handleCheckout(event)" class="w-full bg-tani-dark text-white font-bold py-4 rounded-2xl shadow-lg transition-transform active:scale-95">Checkout (Akad Murabahah)</button>
             </div>
         </div>
     </template>
@@ -770,26 +983,165 @@
                 </div>
             </div>
 
-            <!-- Form Tambah Catatan -->
-            <div class="bg-white dark:bg-dark-card rounded-3xl p-5 shadow-sm border border-gray-100 dark:border-gray-800">
-                <h3 class="font-bold text-sm dark:text-white mb-4">Catat Transaksi Baru</h3>
-                <form onsubmit="handleTambahKas(event)" class="space-y-3">
-                    <div class="grid grid-cols-2 gap-3">
-                        <button type="button" id="btn-kas-in" onclick="setKasType('in')" class="kas-type-btn bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 font-bold py-2 rounded-xl text-xs border-2 border-green-500">Pemasukan</button>
-                        <button type="button" id="btn-kas-out" onclick="setKasType('out')" class="kas-type-btn bg-gray-50 text-gray-500 dark:bg-gray-800 dark:text-gray-400 font-bold py-2 rounded-xl text-xs border-2 border-transparent">Pengeluaran</button>
+            <!-- Dompet Barokah E-Wallet Card -->
+            <div class="bg-white dark:bg-dark-card rounded-3xl p-5 shadow-sm border border-gray-100 dark:border-gray-800 flex justify-between items-center transition-colors">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-yellow-50 dark:bg-yellow-950/20 text-yellow-600 rounded-xl flex items-center justify-center"><i class="fas fa-wallet text-lg"></i></div>
+                    <div>
+                        <p class="text-[10px] text-gray-400">Saldo Dompet Barokah</p>
+                        <h4 id="user-wallet-balance" class="text-base font-bold dark:text-white">Rp 0</h4>
                     </div>
-                    <input type="hidden" id="kas-type" value="in">
-                    <input type="text" id="kas-desc" placeholder="Keterangan (Cth: Jual Gabah)" required class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white">
-                    <input type="number" id="kas-amount" placeholder="Nominal (Rp)" required class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white">
-                    <button type="submit" class="w-full bg-tani-gold text-tani-dark font-bold py-3 rounded-xl shadow-md text-xs">Simpan Catatan</button>
-                </form>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="openTopUpModal()" class="bg-tani-dark hover:bg-green-800 text-white text-[10px] font-bold px-3 py-2.5 rounded-xl flex items-center gap-1.5 shadow-sm transition-transform active:scale-95"><i class="fas fa-plus"></i> Top Up</button>
+                    <button onclick="openTransferModal()" class="bg-tani-light dark:bg-gray-800 text-tani-dark dark:text-tani-green hover:bg-green-100 dark:hover:bg-gray-700 text-[10px] font-bold px-3 py-2.5 rounded-xl flex items-center gap-1.5 border border-green-100 dark:border-green-800 shadow-sm transition-transform active:scale-95"><i class="fas fa-paper-plane"></i> Transfer</button>
+                </div>
             </div>
 
-            <!-- Riwayat Catatan -->
-            <div>
-                <h3 class="font-bold text-sm dark:text-white mb-3">Riwayat Transaksi</h3>
-                <div id="kas-history-container" class="space-y-3 pb-4">
-                    <!-- Data Di-inject Via JS -->
+            <!-- Tab Switcher -->
+            <div class="flex bg-gray-100 dark:bg-gray-850 p-1 rounded-2xl w-full border border-gray-250/20 dark:border-gray-700/30">
+                <button type="button" id="tab-kas-catat" onclick="switchKeuanganTab('catat')" class="flex-1 py-2 text-xs font-bold rounded-xl transition-all duration-300 bg-white dark:bg-dark-card text-tani-dark dark:text-tani-green shadow-sm">Catat & Riwayat</button>
+                <button type="button" id="tab-kas-laporan" onclick="switchKeuanganTab('laporan')" class="flex-1 py-2 text-xs font-medium rounded-xl transition-all duration-300 text-gray-400 dark:text-gray-500">Laporan Keuangan</button>
+            </div>
+
+            <!-- Container Tab Catat & Riwayat -->
+            <div id="section-kas-catat" class="space-y-6">
+                <!-- Form Tambah Catatan -->
+                <div class="bg-white dark:bg-dark-card rounded-3xl p-5 shadow-sm border border-gray-100 dark:border-gray-800">
+                    <h3 class="font-bold text-sm dark:text-white mb-4">Catat Transaksi Baru</h3>
+                    <form onsubmit="handleTambahKas(event)" class="space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <button type="button" id="btn-kas-in" onclick="setKasType('in')" class="kas-type-btn bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 font-bold py-2 rounded-xl text-xs border-2 border-green-500">Pemasukan</button>
+                            <button type="button" id="btn-kas-out" onclick="setKasType('out')" class="kas-type-btn bg-gray-50 text-gray-500 dark:bg-gray-800 dark:text-gray-400 font-bold py-2 rounded-xl text-xs border-2 border-transparent">Pengeluaran</button>
+                        </div>
+                        <input type="hidden" id="kas-type" value="in">
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-[9px] text-gray-400 dark:text-gray-500 ml-1">Keterangan</label>
+                                <input type="text" id="kas-desc" placeholder="Cth: Jual Gabah" required class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white">
+                            </div>
+                            <div>
+                                <label class="text-[9px] text-gray-400 dark:text-gray-500 ml-1">Tanggal Transaksi</label>
+                                <input type="date" id="kas-date" required class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-[9px] text-gray-400 dark:text-gray-500 ml-1">Kategori Akun</label>
+                                <select id="kas-account" required class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white bg-white">
+                                    <option value="Pendapatan Penjualan">Pendapatan Penjualan (Hasil Tani)</option>
+                                    <option value="Pendapatan Hibah/Wakaf">Pendapatan Hibah/Wakaf</option>
+                                    <option value="Pendapatan Lain-lain">Pendapatan Lain-lain</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[9px] text-gray-400 dark:text-gray-500 ml-1">Nominal (Rp)</label>
+                                <input type="number" id="kas-amount" placeholder="Nominal (Rp)" required class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-tani-gold text-tani-dark font-bold py-3 rounded-xl shadow-md text-xs">Simpan Catatan</button>
+                    </form>
+                </div>
+
+                <!-- Riwayat Catatan -->
+                <div>
+                    <h3 class="font-bold text-sm dark:text-white mb-3">Riwayat Transaksi</h3>
+                    <div id="kas-history-container" class="space-y-3 pb-4">
+                        <!-- Data Di-inject Via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Container Tab Laporan Keuangan -->
+            <div id="section-kas-laporan" class="space-y-6 hidden">
+                <!-- Filter Periode Laporan -->
+                <div class="bg-white dark:bg-dark-card rounded-3xl p-5 shadow-sm border border-gray-100 dark:border-gray-800 space-y-3">
+                    <h3 class="font-bold text-sm dark:text-white">Filter Periode Laporan</h3>
+                    
+                    <div>
+                        <label class="text-[9px] text-gray-400 dark:text-gray-500 ml-1">Pilih Periode Bulanan</label>
+                        <select id="report-month-select" onchange="setReportMonth(this.value)" class="w-full px-3 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white bg-white dark:bg-dark-card">
+                            <option value="custom" disabled>-- Pilih Periode Bulanan --</option>
+                            <option value="current" selected>Bulan Ini</option>
+                            <option value="last">Bulan Lalu</option>
+                            <option value="1">Januari</option>
+                            <option value="2">Februari</option>
+                            <option value="3">Maret</option>
+                            <option value="4">April</option>
+                            <option value="5">Mei</option>
+                            <option value="6">Juni</option>
+                            <option value="7">Juli</option>
+                            <option value="8">Agustus</option>
+                            <option value="9">September</option>
+                            <option value="10">Oktober</option>
+                            <option value="11">November</option>
+                            <option value="12">Desember</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[9px] text-gray-400 dark:text-gray-500 ml-1">Tanggal Mulai</label>
+                            <input type="date" id="report-start-date" onchange="document.getElementById('report-month-select').value = 'custom'" class="w-full px-3 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white">
+                        </div>
+                        <div>
+                            <label class="text-[9px] text-gray-400 dark:text-gray-500 ml-1">Tanggal Selesai</label>
+                            <input type="date" id="report-end-date" onchange="document.getElementById('report-month-select').value = 'custom'" class="w-full px-3 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-xs focus:outline-none dark:text-white">
+                        </div>
+                    </div>
+                    <button onclick="generateLaporanKeuangan()" class="w-full bg-tani-dark text-white font-bold py-3 rounded-xl shadow-md text-xs transition-colors hover:bg-green-800">Tampilkan Laporan</button>
+                </div>
+
+                <!-- Ringkasan Periode -->
+                <div id="report-summary-card" class="bg-white dark:bg-dark-card rounded-3xl p-5 shadow-sm border border-gray-100 dark:border-gray-800 space-y-4 hidden">
+                    <div class="flex justify-between items-center pb-2 border-b border-gray-100 dark:border-gray-800">
+                        <h3 class="font-bold text-sm dark:text-white">Hasil Laporan Keuangan</h3>
+                        <button onclick="cetakLaporanKeuangan()" class="bg-tani-gold text-tani-dark font-bold text-[10px] px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm"><i class="fas fa-print"></i> Cetak</button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="bg-green-50 dark:bg-green-950/20 p-3 rounded-2xl text-center">
+                            <span class="text-[9px] text-gray-400 dark:text-gray-500 block">Total Pemasukan</span>
+                            <span id="report-total-in" class="text-xs font-bold text-green-600 dark:text-green-400">Rp 0</span>
+                        </div>
+                        <div class="bg-red-50 dark:bg-red-950/20 p-3 rounded-2xl text-center">
+                            <span class="text-[9px] text-gray-400 dark:text-gray-500 block">Total Pengeluaran</span>
+                            <span id="report-total-out" class="text-xs font-bold text-red-500 dark:text-red-400">Rp 0</span>
+                        </div>
+                        <div id="report-profit-container" class="bg-blue-50 dark:bg-blue-950/20 p-3 rounded-2xl text-center">
+                            <span id="report-profit-label" class="text-[9px] text-gray-400 dark:text-gray-500 block">Laba Bersih</span>
+                            <span id="report-total-profit" class="text-xs font-bold text-blue-600 dark:text-blue-400">Rp 0</span>
+                        </div>
+                    </div>
+
+                    <!-- Visual Progress Bar Rasio Kas -->
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-[10px] text-gray-500 dark:text-gray-400">
+                            <span>Rasio Pemasukan vs Pengeluaran</span>
+                            <span id="report-ratio-text">0% : 0%</span>
+                        </div>
+                        <div class="w-full bg-red-100 dark:bg-red-950/30 rounded-full h-2.5 overflow-hidden flex">
+                            <div id="report-ratio-in-bar" class="bg-green-500 h-full transition-all duration-500" style="width: 0%"></div>
+                            <div id="report-ratio-out-bar" class="bg-red-500 h-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Ringkasan Berdasarkan Kategori Akun -->
+                    <div class="space-y-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+                        <h4 class="font-bold text-xs dark:text-white">Rincian Berdasarkan Akun Kategori</h4>
+                        <div id="report-account-breakdown" class="space-y-1.5 text-[11px] text-gray-600 dark:text-gray-300">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Daftar Transaksi Periode -->
+                    <div class="space-y-2 pt-2">
+                        <h4 class="font-bold text-xs dark:text-white">Rincian Transaksi Periode</h4>
+                        <div id="report-transactions-list" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -938,13 +1290,50 @@
         let orders = storage.get('tb_order_v4', []); 
         let personalWakaf = storage.get('tb_wakaf_personal', []); 
         let currentUser = storage.get('tb_user_final', null); 
+        if (currentUser && currentUser.wallet === undefined) {
+            currentUser.wallet = 200000;
+            storage.set('tb_user_final', currentUser);
+        }
         let kasTransactions = storage.get('tb_kas_final', []); 
+        // Data migration for kasTransactions: ensure rawDate exists
+        kasTransactions = kasTransactions.map(trx => {
+            if (!trx.rawDate) {
+                let d = new Date();
+                if (trx.date) {
+                    const parts = trx.date.split(' ');
+                    if (parts.length === 3) {
+                        const day = parseInt(parts[0]);
+                        const months = { 'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'Mei': 4, 'Jun': 5, 'Jul': 6, 'Agt': 7, 'Sep': 8, 'Okt': 9, 'Nov': 10, 'Des': 11 };
+                        const month = months[parts[1]] !== undefined ? months[parts[1]] : d.getMonth();
+                        const year = parseInt(parts[2]);
+                        if (!isNaN(day) && !isNaN(year)) {
+                            d = new Date(year, month, day);
+                        }
+                    }
+                }
+                trx.rawDate = d.toISOString().split('T')[0];
+            }
+            if (!trx.account) {
+                if (trx.desc.includes('Top Up')) {
+                    trx.account = 'Pendapatan Top Up Wallet';
+                } else if (trx.desc.includes('Transfer')) {
+                    trx.account = 'Transfer Keluar';
+                } else if (trx.desc.includes('Belanja Toko') || trx.items) {
+                    trx.account = 'Belanja Toko Syariah';
+                } else {
+                    trx.account = trx.type === 'in' ? 'Pendapatan Penjualan' : 'Biaya Operasional';
+                }
+            }
+            return trx;
+        });
+        storage.set('tb_kas_final', kasTransactions);
         let usersDB = storage.get('tb_users_db', []); 
         
         let isLoginMode = false;
         let currentMarketplaceCategory = 'Semua';
         let currentWakaf = 12500000;
         let calcValue = ''; 
+        let currentReportAccountTotals = {}; 
 
         // Untuk AI Vision
         let uploadedImageBase64 = null;
@@ -1088,6 +1477,7 @@
                 const user = usersDB.find(u => u.email === em && u.password === pw);
                 if (user) {
                     currentUser = user;
+                    if (currentUser.wallet === undefined) currentUser.wallet = 200000;
                     storage.set('tb_user_final', currentUser);
                     showToast(`Selamat datang kembali, ${user.name.split(' ')[0]}!`);
                     updateHeader();
@@ -1099,7 +1489,7 @@
                 const nm = document.getElementById('auth-name').value.trim();
                 const existingUser = usersDB.find(u => u.email === em);
                 if (existingUser) { showToast("Gagal! Email ini sudah terdaftar. Silakan Masuk.", "error"); return; }
-                const newUser = { name: nm, email: em, password: pw, role: 'Pembeli' };
+                const newUser = { name: nm, email: em, password: pw, role: 'Pembeli', wallet: 200000 };
                 usersDB.push(newUser); storage.set('tb_users_db', usersDB);
                 currentUser = newUser; storage.set('tb_user_final', currentUser);
                 showToast(`Pendaftaran berhasil! Selamat datang.`); updateHeader(); navigate('home');
@@ -1116,9 +1506,14 @@
                 let user = usersDB.find(u => u.email === googleEmail);
                 
                 if (!user) {
-                    user = { name: "Pengguna Google", email: googleEmail, password: "google-auth-bypassed", role: 'Pembeli' };
+                    user = { name: "Pengguna Google", email: googleEmail, password: "google-auth-bypassed", role: 'Pembeli', wallet: 200000 };
                     usersDB.push(user);
                     storage.set('tb_users_db', usersDB);
+                } else {
+                    if (user.wallet === undefined) {
+                        user.wallet = 200000;
+                        storage.set('tb_users_db', usersDB);
+                    }
                 }
                 
                 currentUser = user; 
@@ -1258,14 +1653,76 @@
                 return `<div class="bg-white dark:bg-dark-card rounded-3xl p-3 flex gap-3 shadow-sm border border-gray-50 dark:border-gray-800"><img src="${i.img}" class="w-20 h-20 object-cover rounded-2xl"><div class="flex-1 flex flex-col justify-center"><h4 class="font-bold text-[11px] dark:text-white">${i.name}</h4><p class="font-bold text-tani-dark dark:text-tani-green text-sm mt-0.5">${formatRp(i.price)}</p><div class="flex justify-between mt-2"><div class="flex items-center bg-gray-50 dark:bg-gray-800 rounded-xl"><button onclick="updateCartQty(${idx}, -1)" class="w-7 text-gray-500">-</button><span class="w-6 text-center text-xs font-bold dark:text-white">${i.qty}</span><button onclick="updateCartQty(${idx}, 1)" class="w-7 text-gray-500">+</button></div><button onclick="removeFromCart(${idx})" class="text-red-400 text-sm p-1"><i class="fas fa-trash-alt"></i></button></div></div></div>`;
             }).join('');
             document.getElementById('cart-total').textContent = formatRp(sub);
+            const balInfo = document.getElementById('cart-wallet-balance-info');
+            if (balInfo) {
+                balInfo.textContent = `Saldo: ${formatRp(currentUser ? (currentUser.wallet || 0) : 0)}`;
+            }
         }
         function updateCartQty(idx, c) { cart[idx].qty = Math.max(1, cart[idx].qty + c); storage.set('tb_cart_v4', cart); renderCart(); updateBadge(); }
         function removeFromCart(idx) { cart.splice(idx, 1); storage.set('tb_cart_v4', cart); renderCart(); updateBadge(); }
         function handleCheckout(e) {
             if(!currentUser) return showToast("Silakan login dulu", "error"), navigate('login');
-            orders.unshift({ id: 'ORD-' + Math.floor(Math.random() * 10000), items: [...cart], total: cart.reduce((s, i) => s + (i.price * i.qty), 0), status: 'Diproses' });
-            storage.set('tb_order_v4', orders); cart = []; storage.set('tb_cart_v4', cart); updateBadge();
-            showToast("Pesanan Murabahah Berhasil!"); navigate('dashboard');
+            
+            const rawDateVal = new Date().toISOString().split('T')[0];
+            const dateStrVal = new Date().toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'});
+            
+            const orderId = 'ORD-' + Math.floor(Math.random() * 10000);
+            const totalVal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+            
+            const payMethodInput = document.querySelector('input[name="pay-method"]:checked');
+            const payMethod = payMethodInput ? payMethodInput.value : 'cash';
+            
+            if (payMethod === 'wallet') {
+                const currentWallet = currentUser.wallet || 0;
+                if (currentWallet < totalVal) {
+                    showToast("Saldo Dompet Barokah tidak mencukupi!", "error");
+                    return;
+                }
+                currentUser.wallet = currentWallet - totalVal;
+                storage.set('tb_user_final', currentUser);
+                
+                const dbIndex = usersDB.findIndex(u => u.email === currentUser.email);
+                if (dbIndex !== -1) {
+                    usersDB[dbIndex].wallet = currentUser.wallet;
+                    storage.set('tb_users_db', usersDB);
+                }
+            }
+            
+            orders.unshift({ 
+                id: orderId, 
+                items: [...cart], 
+                total: totalVal, 
+                status: 'Diproses',
+                payMethod: payMethod,
+                rawDate: rawDateVal,
+                date: dateStrVal
+            });
+            
+            // Automatically log this as a "Pengeluaran" (out) inside kasTransactions
+            const productNames = cart.map(i => `${i.name} (x${i.qty})`).join(', ');
+            kasTransactions.unshift({
+                desc: `Belanja Toko (${payMethod === 'wallet' ? 'Dompet' : 'Manual'}): ` + productNames,
+                amount: totalVal,
+                type: 'out',
+                account: 'Belanja Toko Syariah',
+                rawDate: rawDateVal,
+                date: dateStrVal,
+                items: [...cart],
+                img: cart[0].img
+            });
+            
+            // Re-sort transactions by newest date
+            kasTransactions.sort((a, b) => new Date(b.rawDate) - new Date(a.rawDate));
+            
+            storage.set('tb_kas_final', kasTransactions);
+            storage.set('tb_order_v4', orders); 
+            
+            cart = []; 
+            storage.set('tb_cart_v4', cart); 
+            updateBadge();
+            
+            showToast(payMethod === 'wallet' ? "Pesanan Berhasil (Dibayar dengan Dompet)!" : "Pesanan Murabahah Berhasil!"); 
+            navigate('dashboard');
             setTimeout(() => renderOrderHistory(), 100);
         }
 
@@ -1309,6 +1766,7 @@
                                 <span class="font-bold text-tani-dark dark:text-tani-green text-base">${o.id}</span>
                                 <span class="bg-yellow-100 text-yellow-800 text-[9px] font-bold px-2 py-0.5 rounded-md h-fit">${o.status}</span>
                             </div>
+                            <span class="text-[10px] text-gray-500 font-medium mt-1"><i class="far fa-calendar mr-1"></i>Tanggal Beli: ${o.date || '-'}</span>
                             <span class="text-[10px] text-gray-400 mt-0.5">Ketuk untuk lihat detail pelacakan resi</span>
                         </div>
                         <i id="order-icon-${o.id}" class="fas fa-chevron-down text-gray-300"></i>
@@ -1321,7 +1779,7 @@
                         <span>Total Tagihan</span>
                         <span class="text-tani-gold text-base">${formatRp(o.total)}</span>
                     </div>
-
+ 
                     <div id="order-detail-${o.id}" class="hidden mt-4 pt-4 border-t border-dashed border-gray-200 dark:border-gray-700">
                         <h4 class="text-[10px] font-bold text-gray-500 mb-3 tracking-wider">STATUS PENGIRIMAN (LACAK RESI)</h4>
                         <div class="flex items-start gap-3 mb-3 relative">
@@ -1338,7 +1796,7 @@
                 </div>
             `).join('') + `</div>`;
         }
-
+ 
         function renderSelesaiHistory() {
             const c = document.getElementById('dashboard-dynamic-content'); c.classList.remove('hidden');
             const pastOrders = orders.filter(o => o.status === 'Selesai');
@@ -1346,7 +1804,10 @@
             c.innerHTML = `<h3 class="font-bold text-sm dark:text-white mb-3">Riwayat Pembelian</h3><div class="space-y-4">` + pastOrders.map(o => `
                 <div class="border dark:border-gray-700 rounded-3xl p-5 text-sm bg-gray-50 dark:bg-gray-900 shadow-inner opacity-90">
                     <div class="flex justify-between items-center border-b dark:border-gray-700 pb-3 mb-3">
-                        <span class="font-bold text-gray-600 dark:text-gray-400 text-base">${o.id}</span>
+                        <div class="flex flex-col">
+                            <span class="font-bold text-gray-600 dark:text-gray-400 text-base">${o.id}</span>
+                            <span class="text-[10px] text-gray-500 font-medium mt-1"><i class="far fa-calendar mr-1"></i>Tanggal Beli: ${o.date || '-'}</span>
+                        </div>
                         <span class="bg-green-100 text-green-800 text-[9px] font-bold px-2 py-0.5 rounded-md h-fit"><i class="fas fa-check-circle mr-1"></i>Selesai</span>
                     </div>
                     <div class="space-y-1.5 mb-3">
@@ -1362,6 +1823,29 @@
 
         // Keuangan & Kalkulator
         function renderKeuangan() {
+            // Set date defaults
+            setTimeout(() => {
+                const todayStr = new Date().toISOString().split('T')[0];
+                const dateInput = document.getElementById('kas-date');
+                if (dateInput && !dateInput.value) dateInput.value = todayStr;
+
+                const startInput = document.getElementById('report-start-date');
+                const endInput = document.getElementById('report-end-date');
+                if (startInput && !startInput.value) {
+                    const y = new Date().getFullYear();
+                    const m = String(new Date().getMonth() + 1).padStart(2, '0');
+                    startInput.value = `${y}-${m}-01`;
+                }
+                if (endInput && !endInput.value) {
+                    endInput.value = todayStr;
+                }
+
+                const monthSelect = document.getElementById('report-month-select');
+                if (monthSelect) monthSelect.value = 'current';
+
+                updateKasAccountOptions('in');
+            }, 50);
+
             const c = document.getElementById('kas-history-container');
             let totalIn = 0, totalOut = 0;
             if (kasTransactions.length === 0) {
@@ -1370,15 +1854,41 @@
                 c.innerHTML = kasTransactions.map((trx, idx) => {
                     if (trx.type === 'in') totalIn += trx.amount; else totalOut += trx.amount;
                     const isMasuk = trx.type === 'in';
+                    
+                    let iconHtml = `
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center ${isMasuk ? 'bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400' : 'bg-red-50 text-red-500 dark:bg-red-900/20 dark:text-red-400'}">
+                        <i class="fas ${isMasuk ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
+                    </div>`;
+                    if (trx.img) {
+                        iconHtml = `<img src="${trx.img}" class="w-10 h-10 rounded-xl object-cover shadow-sm border border-gray-100 dark:border-gray-800 flex-shrink-0">`;
+                    }
+                    
+                    let itemsHtml = '';
+                    if (trx.items && trx.items.length > 0) {
+                        itemsHtml = `
+                        <div class="mt-1 space-y-0.5 border-t border-dashed border-gray-100 dark:border-gray-800/50 pt-1">
+                            ${trx.items.map(item => `
+                                <div class="text-[9px] text-gray-400 flex items-center gap-1">
+                                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-tani-gold"></span>
+                                    <span>${item.name} (x${item.qty})</span>
+                                </div>
+                            `).join('')}
+                        </div>`;
+                    }
+
                     return `
-                    <div class="bg-white dark:bg-dark-card rounded-2xl p-4 flex justify-between items-center shadow-sm border border-gray-50 dark:border-gray-800">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl flex items-center justify-center ${isMasuk ? 'bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400' : 'bg-red-50 text-red-500 dark:bg-red-900/20 dark:text-red-400'}"><i class="fas ${isMasuk ? 'fa-arrow-down' : 'fa-arrow-up'}"></i></div>
-                            <div><p class="font-bold text-xs dark:text-white">${trx.desc}</p><p class="text-[9px] text-gray-400">${trx.date}</p></div>
+                    <div class="bg-white dark:bg-dark-card rounded-2xl p-4 flex justify-between items-start shadow-sm border border-gray-50 dark:border-gray-800">
+                        <div class="flex items-start gap-3">
+                            ${iconHtml}
+                            <div>
+                                <p class="font-bold text-xs dark:text-white">${trx.desc}</p>
+                                <p class="text-[9px] text-gray-400">${trx.date}</p>
+                                ${itemsHtml}
+                            </div>
                         </div>
                         <div class="text-right flex items-center gap-3">
                             <p class="font-bold text-sm ${isMasuk ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}">${isMasuk ? '+' : '-'}${formatRp(trx.amount)}</p>
-                            <button onclick="hapusKas(${idx})" class="text-gray-300 hover:text-red-500"><i class="fas fa-trash-alt text-xs"></i></button>
+                            <button onclick="hapusKas(${idx})" class="text-gray-300 hover:text-red-500 mt-0.5"><i class="fas fa-trash-alt text-xs"></i></button>
                         </div>
                     </div>`;
                 }).join('');
@@ -1386,11 +1896,17 @@
             document.getElementById('kas-total-in').textContent = formatRp(totalIn);
             document.getElementById('kas-total-out').textContent = formatRp(totalOut);
             document.getElementById('kas-saldo-total').textContent = formatRp(totalIn - totalOut);
+            
+            const walletBalanceEl = document.getElementById('user-wallet-balance');
+            if (walletBalanceEl) {
+                walletBalanceEl.textContent = formatRp(currentUser ? (currentUser.wallet || 0) : 0);
+            }
         }
 
         function setKasType(type) {
             document.getElementById('kas-type').value = type;
             const btnIn = document.getElementById('btn-kas-in'), btnOut = document.getElementById('btn-kas-out');
+            updateKasAccountOptions(type);
             if(type === 'in') {
                 btnIn.className = "kas-type-btn bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 font-bold py-2 rounded-xl text-xs border-2 border-green-500";
                 btnOut.className = "kas-type-btn bg-gray-50 text-gray-500 dark:bg-gray-800 dark:text-gray-400 font-bold py-2 rounded-xl text-xs border-2 border-transparent";
@@ -1400,16 +1916,651 @@
             }
         }
 
-        function handleTambahKas(e) {
-            e.preventDefault();
-            kasTransactions.unshift({
-                desc: document.getElementById('kas-desc').value, amount: parseFloat(document.getElementById('kas-amount').value),
-                type: document.getElementById('kas-type').value, date: new Date().toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'})
-            });
-            storage.set('tb_kas_final', kasTransactions); showToast("Catatan berhasil disimpan!"); e.target.reset(); renderKeuangan();
+        function updateKasAccountOptions(type) {
+            const accSelect = document.getElementById('kas-account');
+            if (!accSelect) return;
+            
+            if (type === 'in') {
+                accSelect.innerHTML = `
+                    <option value="Pendapatan Penjualan">Pendapatan Penjualan (Hasil Tani)</option>
+                    <option value="Pendapatan Hibah/Wakaf">Pendapatan Hibah/Wakaf</option>
+                    <option value="Pendapatan Lain-lain">Pendapatan Lain-lain</option>
+                `;
+            } else {
+                accSelect.innerHTML = `
+                    <option value="Pembelian Bibit & Pupuk">Pembelian Bibit & Pupuk</option>
+                    <option value="Sewa Alat & Mesin">Sewa Alat & Mesin</option>
+                    <option value="Upah Pekerja">Upah Pekerja</option>
+                    <option value="Biaya Operasional">Biaya Operasional</option>
+                    <option value="Pengeluaran Lain-lain">Pengeluaran Lain-lain</option>
+                `;
+            }
         }
 
-        function hapusKas(idx) { kasTransactions.splice(idx, 1); storage.set('tb_kas_final', kasTransactions); renderKeuangan(); }
+        function handleTambahKas(e) {
+            e.preventDefault();
+            const dateVal = document.getElementById('kas-date').value || new Date().toISOString().split('T')[0];
+            const d = new Date(dateVal);
+            const dateStr = d.toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'});
+            
+            const kasAccVal = document.getElementById('kas-account').value;
+            
+            kasTransactions.unshift({
+                desc: document.getElementById('kas-desc').value,
+                amount: parseFloat(document.getElementById('kas-amount').value),
+                type: document.getElementById('kas-type').value,
+                account: kasAccVal,
+                rawDate: dateVal,
+                date: dateStr
+            });
+            
+            // Urutkan transaksi berdasarkan tanggal terbaru
+            kasTransactions.sort((a, b) => new Date(b.rawDate) - new Date(a.rawDate));
+            
+            storage.set('tb_kas_final', kasTransactions);
+            showToast("Catatan berhasil disimpan!");
+            e.target.reset();
+            
+            // Reset dropdown options to default 'in' options
+            updateKasAccountOptions('in');
+            
+            // Set input tanggal kembali ke hari ini
+            const dateInput = document.getElementById('kas-date');
+            if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+            
+            renderKeuangan();
+        }
+
+        function hapusKas(idx) {
+            kasTransactions.splice(idx, 1);
+            storage.set('tb_kas_final', kasTransactions);
+            renderKeuangan();
+            
+            // Jika tab laporan sedang aktif, refresh laporannya juga
+            const secLaporan = document.getElementById('section-kas-laporan');
+            if (secLaporan && !secLaporan.classList.contains('hidden')) {
+                generateLaporanKeuangan();
+            }
+        }
+
+        function switchKeuanganTab(tab) {
+            const btnCatat = document.getElementById('tab-kas-catat');
+            const btnLaporan = document.getElementById('tab-kas-laporan');
+            const secCatat = document.getElementById('section-kas-catat');
+            const secLaporan = document.getElementById('section-kas-laporan');
+            
+            if (tab === 'catat') {
+                btnCatat.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all duration-300 bg-white dark:bg-dark-card text-tani-dark dark:text-tani-green shadow-sm";
+                btnLaporan.className = "flex-1 py-2 text-xs font-medium rounded-xl transition-all duration-300 text-gray-400 dark:text-gray-500";
+                secCatat.classList.remove('hidden');
+                secLaporan.classList.add('hidden');
+            } else {
+                btnLaporan.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all duration-300 bg-white dark:bg-dark-card text-tani-dark dark:text-tani-green shadow-sm";
+                btnCatat.className = "flex-1 py-2 text-xs font-medium rounded-xl transition-all duration-300 text-gray-400 dark:text-gray-500";
+                secCatat.classList.add('hidden');
+                secLaporan.classList.remove('hidden');
+                generateLaporanKeuangan();
+            }
+        }
+
+        function setReportMonth(val) {
+            if (val === 'custom') return;
+            
+            const today = new Date();
+            let year = today.getFullYear();
+            let startMonth, endMonth;
+            
+            if (val === 'current') {
+                startMonth = today.getMonth();
+                endMonth = today.getMonth();
+            } else if (val === 'last') {
+                startMonth = today.getMonth() - 1;
+                endMonth = today.getMonth() - 1;
+                if (startMonth < 0) {
+                    startMonth = 11;
+                    endMonth = 11;
+                    year--;
+                }
+            } else {
+                startMonth = parseInt(val) - 1;
+                endMonth = parseInt(val) - 1;
+            }
+            
+            const startDate = new Date(year, startMonth, 1);
+            const endDate = new Date(year, endMonth + 1, 0);
+            
+            const formatOffsetDate = (d) => {
+                const yyyy = d.getFullYear();
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const dd = String(d.getDate()).padStart(2, '0');
+                return `${yyyy}-${mm}-${dd}`;
+            };
+            
+            document.getElementById('report-start-date').value = formatOffsetDate(startDate);
+            document.getElementById('report-end-date').value = formatOffsetDate(endDate);
+            
+            generateLaporanKeuangan();
+        }
+
+        function generateLaporanKeuangan() {
+            const startDate = document.getElementById('report-start-date').value;
+            const endDate = document.getElementById('report-end-date').value;
+            
+            if (!startDate || !endDate) {
+                showToast("Harap tentukan tanggal mulai dan selesai", "error");
+                return;
+            }
+            
+            if (new Date(startDate) > new Date(endDate)) {
+                showToast("Tanggal mulai tidak boleh lebih dari tanggal selesai", "error");
+                return;
+            }
+            
+            // Filter transaksi berdasarkan periode tanggal
+            const filteredTrx = kasTransactions.filter(trx => {
+                const trxDate = trx.rawDate;
+                return trxDate >= startDate && trxDate <= endDate;
+            });
+            
+            // Hitung total pemasukan & pengeluaran
+            let totalIn = 0;
+            let totalOut = 0;
+            filteredTrx.forEach(trx => {
+                if (trx.type === 'in') totalIn += trx.amount;
+                else totalOut += trx.amount;
+            });
+            
+            const profit = totalIn - totalOut;
+            
+            // Tampilkan hasil ke UI
+            document.getElementById('report-total-in').textContent = formatRp(totalIn);
+            document.getElementById('report-total-out').textContent = formatRp(totalOut);
+            
+            const profitEl = document.getElementById('report-total-profit');
+            const profitContainer = document.getElementById('report-profit-container');
+            const profitLabel = document.getElementById('report-profit-label');
+            
+            profitEl.textContent = formatRp(Math.abs(profit));
+            if (profit >= 0) {
+                profitLabel.textContent = "Laba Bersih";
+                profitEl.className = "text-xs font-bold text-blue-600 dark:text-blue-400";
+                profitContainer.className = "bg-blue-50 dark:bg-blue-950/20 p-3 rounded-2xl text-center";
+            } else {
+                profitLabel.textContent = "Rugi Bersih";
+                profitEl.className = "text-xs font-bold text-red-600 dark:text-red-400";
+                profitContainer.className = "bg-red-50 dark:bg-red-950/20 p-3 rounded-2xl text-center";
+            }
+            
+            // Hitung rasio pemasukan vs pengeluaran
+            const total = totalIn + totalOut;
+            let ratioIn = 0;
+            let ratioOut = 0;
+            if (total > 0) {
+                ratioIn = Math.round((totalIn / total) * 100);
+                ratioOut = 100 - ratioIn;
+            }
+            
+            document.getElementById('report-ratio-text').textContent = `${ratioIn}% : ${ratioOut}%`;
+            document.getElementById('report-ratio-in-bar').style.width = `${ratioIn}%`;
+            document.getElementById('report-ratio-out-bar').style.width = `${ratioOut}%`;
+            
+            // Aggregate totals by category account
+            const accountTotals = {};
+            filteredTrx.forEach(trx => {
+                const acc = trx.account || (trx.type === 'in' ? 'Pendapatan Penjualan' : 'Biaya Operasional');
+                if (!accountTotals[acc]) {
+                    accountTotals[acc] = { type: trx.type, total: 0 };
+                }
+                accountTotals[acc].total += trx.amount;
+            });
+            
+            currentReportAccountTotals = accountTotals;
+            
+            // Render breakdown in UI
+            const breakdownEl = document.getElementById('report-account-breakdown');
+            if (breakdownEl) {
+                if (Object.keys(accountTotals).length === 0) {
+                    breakdownEl.innerHTML = `<p class="text-gray-400 text-[10px] italic">Tidak ada rincian pos akun pada periode ini.</p>`;
+                } else {
+                    breakdownEl.innerHTML = Object.entries(accountTotals).map(([acc, data]) => {
+                        const isMasuk = data.type === 'in';
+                        return `
+                        <div class="flex justify-between items-center py-1.5 border-b border-gray-100/50 dark:border-gray-800/40">
+                            <span class="font-medium">${acc}</span>
+                            <span class="font-bold ${isMasuk ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}">${isMasuk ? '+' : '-'}${formatRp(data.total)}</span>
+                        </div>`;
+                    }).join('');
+                }
+            }
+
+            // Tampilkan daftar transaksi dalam periode ini
+            const listContainer = document.getElementById('report-transactions-list');
+            if (filteredTrx.length === 0) {
+                listContainer.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs">Tidak ada transaksi pada periode ini.</div>`;
+            } else {
+                listContainer.innerHTML = filteredTrx.map(trx => {
+                    const isMasuk = trx.type === 'in';
+                    
+                    let iconHtml = `
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center ${isMasuk ? 'bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400' : 'bg-red-50 text-red-500 dark:bg-red-900/20 dark:text-red-400'}">
+                        <i class="fas ${isMasuk ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
+                    </div>`;
+                    if (trx.img) {
+                        iconHtml = `<img src="${trx.img}" class="w-10 h-10 rounded-xl object-cover shadow-sm border border-gray-100 dark:border-gray-800 flex-shrink-0">`;
+                    }
+                    
+                    let itemsHtml = '';
+                    if (trx.items && trx.items.length > 0) {
+                        itemsHtml = `
+                        <div class="mt-1 space-y-0.5 border-t border-dashed border-gray-100 dark:border-gray-800/50 pt-1">
+                            ${trx.items.map(item => `
+                                <div class="text-[9px] text-gray-400 flex items-center gap-1">
+                                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-tani-gold"></span>
+                                    <span>${item.name} (x${item.qty})</span>
+                                </div>
+                            `).join('')}
+                        </div>`;
+                    }
+
+                    return `
+                    <div class="bg-gray-50 dark:bg-gray-900 rounded-2xl p-3 flex justify-between items-start border border-gray-100 dark:border-gray-800">
+                        <div class="flex items-start gap-3">
+                            ${iconHtml}
+                            <div>
+                                <p class="font-bold text-xs dark:text-white">${trx.desc}</p>
+                                <p class="text-[9px] text-gray-400">${trx.date}</p>
+                                ${itemsHtml}
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold text-xs ${isMasuk ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}">
+                                ${isMasuk ? '+' : '-'}${formatRp(trx.amount)}
+                            </p>
+                            <p class="text-[8px] text-gray-400 mt-0.5 font-medium">${trx.account || (isMasuk ? 'Pendapatan' : 'Pengeluaran')}</p>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+            
+            document.getElementById('report-summary-card').classList.remove('hidden');
+        }
+
+        function cetakLaporanKeuangan() {
+            const startDate = document.getElementById('report-start-date').value;
+            const endDate = document.getElementById('report-end-date').value;
+            
+            if (!startDate || !endDate) return;
+            
+            const startFormatted = new Date(startDate).toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'});
+            const endFormatted = new Date(endDate).toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'});
+            
+            // Filter transaksi
+            const filteredTrx = kasTransactions.filter(trx => {
+                const trxDate = trx.rawDate;
+                return trxDate >= startDate && trxDate <= endDate;
+            });
+            
+            // Hitung total pemasukan & pengeluaran
+            let totalIn = 0;
+            let totalOut = 0;
+            filteredTrx.forEach(trx => {
+                if (trx.type === 'in') totalIn += trx.amount;
+                else totalOut += trx.amount;
+            });
+            
+            const profit = totalIn - totalOut;
+            
+            // Isi metadata cetak
+            document.getElementById('print-meta-date').textContent = "Dicetak pada: " + new Date().toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'}) + " WIB";
+            document.getElementById('print-user-name').textContent = currentUser ? currentUser.name : 'Sahabat Tani';
+            document.getElementById('print-sign-name').textContent = currentUser ? currentUser.name : 'Sahabat Tani';
+            document.getElementById('print-periode').textContent = `${startFormatted} - ${endFormatted}`;
+            
+            document.getElementById('print-total-in').textContent = formatRp(totalIn);
+            document.getElementById('print-total-out').textContent = formatRp(totalOut);
+            
+            const profitBox = document.getElementById('print-profit-box');
+            const profitLabel = document.getElementById('print-profit-label');
+            const profitVal = document.getElementById('print-total-profit');
+            
+            profitVal.textContent = formatRp(Math.abs(profit));
+            if (profit >= 0) {
+                profitLabel.textContent = "Laba Bersih";
+                profitVal.className = "text-sm font-extrabold text-blue-700";
+                profitBox.className = "border border-blue-200 bg-blue-50/50 p-2.5 rounded-xl";
+            } else {
+                profitLabel.textContent = "Rugi Bersih";
+                profitVal.className = "text-sm font-extrabold text-red-700";
+                profitBox.className = "border border-red-200 bg-red-50/50 p-2.5 rounded-xl";
+            }
+            
+            // Aggregate totals by category account for print
+            const accountTotals = {};
+            filteredTrx.forEach(trx => {
+                const acc = trx.account || (trx.type === 'in' ? 'Pendapatan Penjualan' : 'Biaya Operasional');
+                if (!accountTotals[acc]) {
+                    accountTotals[acc] = { type: trx.type, total: 0 };
+                }
+                accountTotals[acc].total += trx.amount;
+            });
+
+            const printBreakdownEl = document.getElementById('print-account-breakdown');
+            if (printBreakdownEl) {
+                if (Object.keys(accountTotals).length === 0) {
+                    printBreakdownEl.innerHTML = `<p class="text-gray-400 text-[10px] italic col-span-2">Tidak ada rincian pos akun pada periode ini.</p>`;
+                } else {
+                    printBreakdownEl.innerHTML = Object.entries(accountTotals).map(([acc, data]) => {
+                        const isMasuk = data.type === 'in';
+                        return `
+                        <div class="flex justify-between items-center py-1 border-b border-gray-100">
+                            <span class="font-medium">${acc}</span>
+                            <span class="font-bold ${isMasuk ? 'text-green-700' : 'text-red-700'}">${isMasuk ? '+' : '-'}${formatRp(data.total)}</span>
+                        </div>`;
+                    }).join('');
+                }
+            }
+            
+            // Isi data tabel cetak
+            const tbody = document.getElementById('print-table-body');
+            if (filteredTrx.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-gray-400 text-xs">Tidak ada transaksi pada periode ini.</td></tr>`;
+            } else {
+                tbody.innerHTML = filteredTrx.map(trx => {
+                    const isMasuk = trx.type === 'in';
+                    
+                    let productDetailsHtml = '';
+                    if (trx.items && trx.items.length > 0) {
+                        productDetailsHtml = `
+                        <div class="mt-1 space-y-1 pl-2 border-l border-tani-gold">
+                            ${trx.items.map(item => `
+                                <div class="flex items-center gap-2 text-[10px] text-gray-500">
+                                    <img src="${item.img}" class="w-6 h-6 rounded-md object-cover">
+                                    <span>${item.name} <b class="text-gray-700">(x${item.qty})</b></span>
+                                </div>
+                            `).join('')}
+                        </div>`;
+                    }
+                    
+                    return `
+                    <tr class="border-b border-gray-100">
+                        <td class="py-3 px-2 text-[11px] text-gray-500">${trx.date}</td>
+                        <td class="py-3 px-2 text-[11px] text-gray-800">
+                            <span class="font-bold block">${trx.desc}</span>
+                            ${productDetailsHtml}
+                        </td>
+                        <td class="py-3 px-2 text-[11px] text-right text-green-700 font-semibold">${isMasuk ? formatRp(trx.amount) : '-'}</td>
+                        <td class="py-3 px-2 text-[11px] text-right text-red-700 font-semibold">${!isMasuk ? formatRp(trx.amount) : '-'}</td>
+                    </tr>`;
+                }).join('');
+            }
+            
+            document.getElementById('print-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePrintModal() {
+            document.getElementById('print-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function doPrint() {
+            window.print();
+        }
+
+        // Dompet Barokah (E-Wallet) Modals & Logic
+        function openTopUpModal() {
+            if(!currentUser) return showToast("Silakan login dulu", "error"), navigate('login');
+            document.getElementById('topup-amount').value = '';
+            document.getElementById('topup-method').value = 'Bank Syariah';
+            updateTopUpInstructions('Bank Syariah');
+            document.getElementById('topup-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            
+            // reset quick topup selections border styling
+            document.querySelectorAll('.quick-topup-btn').forEach(btn => {
+                btn.className = "quick-topup-btn bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 py-2.5 rounded-xl text-xs font-bold dark:text-white hover:border-tani-dark dark:hover:border-tani-green transition-colors";
+            });
+        }
+        
+        function closeTopUpModal() {
+            document.getElementById('topup-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function updateTopUpInstructions(method) {
+            const container = document.getElementById('topup-instructions-container');
+            if (!container) return;
+            
+            const userPhone = currentUser ? (currentUser.phone || '081234567890') : '081234567890';
+            const cleanPhone = userPhone.replace(/\D/g, '');
+            const vaNum = '8877' + (cleanPhone || '081234567890');
+            
+            if (method === 'Bank Syariah') {
+                container.innerHTML = `
+                    <p class="font-bold text-tani-dark dark:text-tani-green text-xs mb-1">Instruksi Pembayaran BSI VA:</p>
+                    <p>1. Lakukan transfer ke Bank Syariah Indonesia (BSI) Virtual Account:</p>
+                    <div class="flex items-center justify-between bg-white dark:bg-dark-card px-3 py-2 rounded-xl border border-gray-100 dark:border-gray-800 my-1 font-mono font-bold text-gray-700 dark:text-white">
+                        <span id="bsi-va-number">${vaNum}</span>
+                        <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('bsi-va-number').textContent); showToast('VA disalin!', 'info')" class="text-tani-dark dark:text-tani-green font-sans text-[9px] hover:underline">SALIN</button>
+                    </div>
+                    <p>2. Saldo Dompet Barokah akan otomatis bertambah setelah konfirmasi.</p>
+                `;
+            } else if (method === 'Qris') {
+                container.innerHTML = `
+                    <p class="font-bold text-tani-dark dark:text-tani-green text-xs mb-1">Instruksi Pembayaran QRIS:</p>
+                    <p class="mb-2">Silakan scan kode QRIS Tani Barokah di bawah ini:</p>
+                    <div class="flex justify-center p-2 bg-white rounded-2xl w-32 h-32 mx-auto border border-gray-100 dark:border-gray-800">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TaniBarokahQRIS" class="w-full h-full object-contain">
+                    </div>
+                `;
+            } else if (method === 'GoPay') {
+                container.innerHTML = `
+                    <p class="font-bold text-tani-dark dark:text-tani-green text-xs mb-1">Instruksi Pembayaran GoPay:</p>
+                    <p>Top Up instan menggunakan aplikasi GoPay Anda. Pastikan aplikasi GoPay terpasang pada perangkat Anda.</p>
+                `;
+            }
+        }
+        
+        function setTopUpAmount(amount) {
+            document.getElementById('topup-amount').value = amount;
+            
+            // Update active styling for quick topup buttons
+            document.querySelectorAll('.quick-topup-btn').forEach(btn => {
+                if (btn.textContent.includes(amount.toLocaleString('id-ID'))) {
+                    btn.className = "quick-topup-btn bg-tani-light/80 dark:bg-tani-dark/30 border-2 border-tani-dark dark:border-tani-green py-2.5 rounded-xl text-xs font-bold text-tani-dark dark:text-tani-green transition-colors";
+                } else {
+                    btn.className = "quick-topup-btn bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 py-2.5 rounded-xl text-xs font-bold dark:text-white hover:border-tani-dark dark:hover:border-tani-green transition-colors";
+                }
+            });
+        }
+        
+        function handleTopUp(e) {
+            e.preventDefault();
+            if(!currentUser) return;
+            
+            const amount = parseFloat(document.getElementById('topup-amount').value);
+            const method = document.getElementById('topup-method').value;
+            
+            if (isNaN(amount) || amount < 10000) {
+                showToast("Minimal top up adalah Rp 10.000", "error");
+                return;
+            }
+            
+            // Credit wallet
+            currentUser.wallet = (currentUser.wallet || 0) + amount;
+            storage.set('tb_user_final', currentUser);
+            
+            // Sync to users DB
+            const dbIndex = usersDB.findIndex(u => u.email === currentUser.email);
+            if (dbIndex !== -1) {
+                usersDB[dbIndex].wallet = currentUser.wallet;
+                storage.set('tb_users_db', usersDB);
+            }
+            
+            // Auto log as "Pemasukan" in kasTransactions
+            const rawDateVal = new Date().toISOString().split('T')[0];
+            const dateStrVal = new Date().toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'});
+            
+            kasTransactions.unshift({
+                desc: `Top Up Dompet Barokah (${method})`,
+                amount: amount,
+                type: 'in',
+                account: 'Pendapatan Top Up Wallet',
+                rawDate: rawDateVal,
+                date: dateStrVal
+            });
+            kasTransactions.sort((a, b) => new Date(b.rawDate) - new Date(a.rawDate));
+            storage.set('tb_kas_final', kasTransactions);
+            
+            closeTopUpModal();
+            showToast(`Top Up ${formatRp(amount)} sukses via ${method}!`, 'success');
+            
+            // Refresh keuangan view
+            renderKeuangan();
+        }
+        
+        function openTransferModal() {
+            if(!currentUser) return showToast("Silakan login dulu", "error"), navigate('login');
+            document.getElementById('transfer-type').value = 'wallet';
+            toggleTransferType('wallet');
+            document.getElementById('transfer-recipient').value = '';
+            document.getElementById('transfer-bank-acc').value = '';
+            document.getElementById('transfer-ewallet-id').value = '';
+            document.getElementById('transfer-ewallet-name').value = 'GoPay';
+            document.getElementById('transfer-amount').value = '';
+            document.getElementById('transfer-note').value = '';
+            document.getElementById('transfer-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeTransferModal() {
+            document.getElementById('transfer-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function toggleTransferType(type) {
+            const walletFields = document.getElementById('transfer-wallet-fields');
+            const bankFields = document.getElementById('transfer-bank-fields');
+            const ewalletFields = document.getElementById('transfer-ewallet-fields');
+            
+            const recipientInput = document.getElementById('transfer-recipient');
+            const bankAccInput = document.getElementById('transfer-bank-acc');
+            const ewalletIdInput = document.getElementById('transfer-ewallet-id');
+            
+            if (type === 'wallet') {
+                if(walletFields) walletFields.classList.remove('hidden');
+                if(bankFields) bankFields.classList.add('hidden');
+                if(ewalletFields) ewalletFields.classList.add('hidden');
+                if(recipientInput) recipientInput.required = true;
+                if(bankAccInput) bankAccInput.required = false;
+                if(ewalletIdInput) ewalletIdInput.required = false;
+            } else if (type === 'bank') {
+                if(walletFields) walletFields.classList.add('hidden');
+                if(bankFields) bankFields.classList.remove('hidden');
+                if(ewalletFields) ewalletFields.classList.add('hidden');
+                if(recipientInput) recipientInput.required = false;
+                if(bankAccInput) bankAccInput.required = true;
+                if(ewalletIdInput) ewalletIdInput.required = false;
+            } else if (type === 'ewallet') {
+                if(walletFields) walletFields.classList.add('hidden');
+                if(bankFields) bankFields.classList.add('hidden');
+                if(ewalletFields) ewalletFields.classList.remove('hidden');
+                if(recipientInput) recipientInput.required = false;
+                if(bankAccInput) bankAccInput.required = false;
+                if(ewalletIdInput) ewalletIdInput.required = true;
+            }
+        }
+        
+        function handleTransfer(e) {
+            e.preventDefault();
+            if(!currentUser) return;
+            
+            const transferType = document.getElementById('transfer-type').value;
+            const amount = parseFloat(document.getElementById('transfer-amount').value);
+            const note = document.getElementById('transfer-note').value.trim() || 'Kirim Saldo';
+            
+            if (isNaN(amount) || amount < 1000) {
+                showToast("Minimal transfer adalah Rp 1.000", "error");
+                return;
+            }
+            
+            const currentWallet = currentUser.wallet || 0;
+            if (currentWallet < amount) {
+                showToast("Saldo Dompet Barokah Anda tidak mencukupi!", "error");
+                return;
+            }
+            
+            let recipientText = '';
+            if (transferType === 'wallet') {
+                recipientText = document.getElementById('transfer-recipient').value.trim();
+                if (!recipientText) {
+                    showToast("Harap isi email/WhatsApp penerima", "error");
+                    return;
+                }
+            } else if (transferType === 'bank') {
+                const bankName = document.getElementById('transfer-bank-name').value;
+                const bankAcc = document.getElementById('transfer-bank-acc').value.trim();
+                if (!bankAcc) {
+                    showToast("Harap isi nomor rekening penerima", "error");
+                    return;
+                }
+                recipientText = `Bank ${bankName} (${bankAcc})`;
+            } else if (transferType === 'ewallet') {
+                const ewalletName = document.getElementById('transfer-ewallet-name').value;
+                const ewalletId = document.getElementById('transfer-ewallet-id').value.trim();
+                if (!ewalletId) {
+                    showToast("Harap isi nomor HP/ID E-Wallet penerima", "error");
+                    return;
+                }
+                recipientText = `${ewalletName} (${ewalletId})`;
+            }
+            
+            // Debit wallet
+            currentUser.wallet = currentWallet - amount;
+            storage.set('tb_user_final', currentUser);
+            
+            // Sync to users DB
+            const dbIndex = usersDB.findIndex(u => u.email === currentUser.email);
+            if (dbIndex !== -1) {
+                usersDB[dbIndex].wallet = currentUser.wallet;
+                storage.set('tb_users_db', usersDB);
+            }
+            
+            // Auto log as "Pengeluaran" in kasTransactions
+            const rawDateVal = new Date().toISOString().split('T')[0];
+            const dateStrVal = new Date().toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'});
+            
+            kasTransactions.unshift({
+                desc: `Transfer ke ${recipientText}: ${note}`,
+                amount: amount,
+                type: 'out',
+                account: 'Transfer Keluar',
+                rawDate: rawDateVal,
+                date: dateStrVal
+            });
+            kasTransactions.sort((a, b) => new Date(b.rawDate) - new Date(a.rawDate));
+            storage.set('tb_kas_final', kasTransactions);
+            
+            closeTransferModal();
+            showToast(`Sukses transfer ${formatRp(amount)} ke ${recipientText}!`, 'success');
+            
+            // Refresh keuangan view
+            renderKeuangan();
+        }
+        
+        function togglePayMethodUI(method) {
+            const lblCash = document.getElementById('label-pay-cash');
+            const lblWallet = document.getElementById('label-pay-wallet');
+            if (!lblCash || !lblWallet) return;
+            
+            if (method === 'cash') {
+                lblCash.className = "flex flex-col items-center justify-center p-3.5 bg-gray-50 dark:bg-gray-855 border-2 border-tani-dark dark:border-tani-green rounded-2xl cursor-pointer relative transition-all";
+                lblWallet.className = "flex flex-col items-center justify-center p-3.5 bg-gray-50 dark:bg-gray-855 border-2 border-transparent rounded-2xl cursor-pointer relative transition-all";
+            } else {
+                lblWallet.className = "flex flex-col items-center justify-center p-3.5 bg-gray-50 dark:bg-gray-855 border-2 border-tani-dark dark:border-tani-green rounded-2xl cursor-pointer relative transition-all";
+                lblCash.className = "flex flex-col items-center justify-center p-3.5 bg-gray-50 dark:bg-gray-855 border-2 border-transparent rounded-2xl cursor-pointer relative transition-all";
+            }
+        }
 
         // Calculator Modal
         function openCalculator() { calcValue = ''; document.getElementById('calc-display').value = '0'; document.getElementById('calculator-modal').classList.remove('hidden'); }
